@@ -5,7 +5,6 @@ built on [Giode](https://github.com/xmhrnx/giode). No JVM, no indexer: a
 native binary that uses no CPU while idle.
 
 - `docs/FEATURES.md`: the feature research and what LiteCode keeps.
-- `docs/GIODE_GAPS.md`: what Giode is still missing, and bugs found while building LiteCode.
 
 ## Run
 
