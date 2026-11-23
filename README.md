@@ -96,3 +96,8 @@ internal/        logic, no Giode imports, unit-tested
 ui/              one component per file
   app/ core/ frame/ toolwin/ editor/ projectview/ gitui/ search/ settings/ welcome/ terminal/ widgets/ theme/
 ```
+
+## License
+
+LiteCode is licensed under the [Apache License 2.0](LICENSE). Bundled fonts (SIL OFL 1.1) and
+icons (ISC) keep their own licenses; see [NOTICE](NOTICE).
