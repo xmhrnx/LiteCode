@@ -6,3 +6,4 @@ build = 1
 description = "A light, keyboard-first IDE with a built-in Git workflow."
 ldflags = "-s -w"
 platforms = ["linux", "windows", "macos"]
+icon = "assets/icon.png"

@@ -8,6 +8,11 @@ import "embed"
 //go:embed fonts/*.ttf
 var Fonts embed.FS
 
+// AppIcon is the window and taskbar icon, 256 px.
+//
+//go:embed icon-256.png
+var AppIcon []byte
+
 // Icons holds Lucide icons (ISC license), drawn in one color that follows
 // the theme.
 //

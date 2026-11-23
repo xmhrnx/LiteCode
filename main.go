@@ -9,6 +9,7 @@ import (
 
 	"github.com/xmhrnx/giode"
 
+	"litecode/assets"
 	"litecode/internal/config"
 	"litecode/ui/app"
 	"litecode/ui/theme"
@@ -44,6 +45,7 @@ func run() error {
 		Center:     true,
 		Background: theme.Current().Editor,
 		Font:       theme.UIFont,
+		Icon:       assets.AppIcon,
 		OnFileDrop: func(paths []string) { root.HandleDrop(paths) },
 		SingleInstanceLock: &giode.SingleInstanceLock{
 			UniqueID: "litecode-6f1d2b7e",
