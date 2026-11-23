@@ -1,0 +1,15 @@
+// Package assets embeds LiteCode's fonts and icons.
+package assets
+
+import "embed"
+
+// Fonts holds Inter (UI) and JetBrains Mono (code), both under the SIL OFL.
+//
+//go:embed fonts/*.ttf
+var Fonts embed.FS
+
+// Icons holds Lucide icons (ISC license), drawn in one color that follows
+// the theme.
+//
+//go:embed icons/*.svg
+var Icons embed.FS

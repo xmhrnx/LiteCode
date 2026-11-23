@@ -1,0 +1,16 @@
+{
+  "name": "Zig",
+  "version": "1.0.0",
+  "description": "Zig files: comments, indentation and zig fmt on save.",
+  "languages": [
+    {
+      "id": "zig",
+      "name": "Zig",
+      "extensions": [".zig", ".zon"],
+      "lineComment": "//",
+      "indentSize": 4,
+      "formatter": { "args": ["zig", "fmt", "--stdin"], "stdin": true },
+      "lsp": { "args": ["zls"] }
+    }
+  ]
+}

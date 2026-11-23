@@ -1,0 +1,8 @@
+[app]
+name = "LiteCode"
+id = "dev.litecode.app"
+version = "0.1.0"
+build = 1
+description = "A light, keyboard-first IDE with a built-in Git workflow."
+ldflags = "-s -w"
+platforms = ["linux", "windows", "macos"]
