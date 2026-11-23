@@ -9,8 +9,6 @@ import (
 
 	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/keymap"
 	isearch "litecode/internal/search"
@@ -44,8 +42,8 @@ type result struct {
 type SearchEverywhere struct {
 	ide       *core.IDE
 	popup     *widgets.Popup
-	field     *input.Input
-	list      *scroll.Scroll
+	field     *giode.InputElement
+	list      *giode.ScrollElement
 	tabs      []*giode.PressableElement
 	rows      *giode.KeyedCache[string, *widgets.ListRow]
 	tab       Tab

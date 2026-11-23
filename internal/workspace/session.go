@@ -6,6 +6,7 @@ import "litecode/internal/config"
 type Session struct {
 	OpenFiles []string `json:"openFiles"`
 	Selected  string   `json:"selected"`
+	Pinned    []string `json:"pinned,omitempty"`
 }
 
 // LoadSession reads a project's session.

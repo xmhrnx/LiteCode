@@ -4,7 +4,6 @@ import (
 	"sync/atomic"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
 )
 
 // typed counts edits in every text field. Giode doesn't show the app the
@@ -14,7 +13,7 @@ var typed atomic.Uint64
 
 // TextField is giode.Input.Text that counts its edits. Use it for every
 // text field; give a field its own change handler with OnChange(Typing(fn)).
-func TextField(placeholder string, st ...giode.Styles) *input.Input {
+func TextField(placeholder string, st ...giode.Styles) *giode.InputElement {
 	return giode.Input.Text(placeholder, st...).OnChange(func(string) { typed.Add(1) })
 }
 

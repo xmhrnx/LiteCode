@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dialog"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/git"
 	"litecode/ui/core"
@@ -19,10 +17,10 @@ type PushDialog struct {
 	commits []git.Commit
 	target  string
 	loading bool
-	list    *scroll.Scroll
+	list    *giode.ScrollElement
 	push    *giode.ButtonElement
 	cancel  *giode.ButtonElement
-	dlg     *dialog.Dialog
+	dlg     *giode.DialogElement
 }
 
 // NewPushDialog creates the dialog.

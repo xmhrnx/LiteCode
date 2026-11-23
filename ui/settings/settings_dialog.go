@@ -4,7 +4,6 @@ package settings
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dialog"
 
 	"litecode/ui/core"
 	"litecode/ui/theme"
@@ -25,7 +24,7 @@ type Dialog struct {
 	selected int
 	nav      []*widgets.ListRow
 	close    *giode.ButtonElement
-	dlg      *dialog.Dialog
+	dlg      *giode.DialogElement
 }
 
 // NewDialog creates the dialog. pluginDir is where plugins live; resetLayout

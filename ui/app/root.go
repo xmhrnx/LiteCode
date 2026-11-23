@@ -124,6 +124,13 @@ func (r *Root) onWindowClose() bool {
 	return false
 }
 
+// FocusChanged passes the window gaining or losing focus to the workbench.
+func (r *Root) FocusChanged(focused bool) {
+	if r.bench != nil {
+		r.bench.FocusChanged(focused)
+	}
+}
+
 // HandleDrop opens dropped files in the editor, or a dropped folder as the project.
 func (r *Root) HandleDrop(paths []string) {
 	for _, p := range paths {

@@ -2,12 +2,10 @@ package gitui
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/git"
 	"litecode/ui/core"
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // headKey is the HEAD row's key; selecting it shows every branch.
@@ -20,9 +18,8 @@ type BranchesPanel struct {
 	filter    string // "" for all branches
 	onFilter  func(branch string)
 	newBranch func(from string)
-	list      *scroll.Scroll
+	list      *giode.ScrollElement
 	rows      *giode.KeyedCache[string, *branchRow]
-	menus     widgets.MenuSlot
 }
 
 // NewBranchesPanel creates the panel.
@@ -48,7 +45,7 @@ func (p *BranchesPanel) doubleClicked(r *branchRow) {
 
 func (p *BranchesPanel) menu(r *branchRow, e giode.ClickEvent) {
 	if r.branch != nil {
-		p.menus.Open(branchMenu(p.ide, *r.branch, p.newBranch, nil), e)
+		branchMenu(p.ide, *r.branch, p.newBranch, nil).OpenAtClick(e)
 	}
 }
 
@@ -90,5 +87,5 @@ func (p *BranchesPanel) view() giode.Element {
 
 // Layout draws the panel.
 func (p *BranchesPanel) Layout(gtx giode.Context) giode.Dimensions {
-	return giode.Box(giode.Styles{Width: -1, Height: -1}, p.list, &p.menus).Layout(gtx)
+	return giode.Box(giode.Styles{Width: -1, Height: -1}, p.list).Layout(gtx)
 }

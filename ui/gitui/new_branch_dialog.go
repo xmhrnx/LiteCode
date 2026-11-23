@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
 
 	"litecode/internal/git"
 	"litecode/ui/core"
@@ -15,7 +14,7 @@ import (
 // NewBranchDialog asks for a branch name and whether to check it out.
 type NewBranchDialog struct {
 	ide      *core.IDE
-	checkout *checkbox.Checkbox
+	checkout *giode.CheckboxElement
 	prompt   *widgets.PromptDialog
 }
 

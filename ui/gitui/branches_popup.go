@@ -5,8 +5,6 @@ import (
 
 	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/git"
 	"litecode/internal/keymap"
@@ -30,10 +28,9 @@ type popupEntry struct {
 type BranchesPopup struct {
 	ide       *core.IDE
 	popup     *widgets.Popup
-	search    *input.Input
-	list      *scroll.Scroll
+	search    *giode.InputElement
+	list      *giode.ScrollElement
 	rows      *giode.KeyedCache[string, *widgets.ListRow]
-	menus     widgets.MenuSlot
 	newBranch *NewBranchDialog
 	entries   []popupEntry
 	highlight int
@@ -117,7 +114,7 @@ func (p *BranchesPopup) key(e key.Event) {
 func (p *BranchesPopup) activate(en popupEntry, e *giode.ClickEvent) {
 	switch {
 	case en.branch != nil && e != nil:
-		p.menus.Open(branchMenu(p.ide, *en.branch, p.newBranch.Ask, p.popup.Close), *e)
+		branchMenu(p.ide, *en.branch, p.newBranch.Ask, p.popup.Close).OpenAtClick(*e)
 	case en.branch != nil:
 		p.popup.Close()
 		if !en.branch.Current {
@@ -182,7 +179,6 @@ func (p *BranchesPopup) content() giode.Element {
 		p.search,
 		theme.Separator(),
 		p.list,
-		&p.menus,
 	)
 }
 

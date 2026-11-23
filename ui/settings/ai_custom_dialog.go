@@ -5,10 +5,6 @@ import (
 	"strings"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
-	"github.com/xmhrnx/giode/components/dialog"
-	"github.com/xmhrnx/giode/components/dropdown"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/internal/llm"
 	"litecode/ui/core"
@@ -36,18 +32,18 @@ type AICustomDialog struct {
 	ide        *core.IDE
 	open       bool
 	editing    string // ID of the provider being edited, "" for a new one
-	name       *input.Input
-	protocol   *dropdown.Select
-	baseURL    *input.Input
-	authHeader *input.Input
-	authPrefix *input.Input
-	needsKey   *checkbox.Checkbox
-	model      *input.Input
-	tokenField *dropdown.Select
-	headers    *input.Input
+	name       *giode.InputElement
+	protocol   *giode.SelectElement
+	baseURL    *giode.InputElement
+	authHeader *giode.InputElement
+	authPrefix *giode.InputElement
+	needsKey   *giode.CheckboxElement
+	model      *giode.InputElement
+	tokenField *giode.SelectElement
+	headers    *giode.InputElement
 	save       *giode.ButtonElement
 	cancel     *giode.ButtonElement
-	dlg        *dialog.Dialog
+	dlg        *giode.DialogElement
 	onSaved    func(id string)
 }
 

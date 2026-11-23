@@ -2,7 +2,6 @@ package settings
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
 
 	"litecode/internal/config"
 	"litecode/internal/format"
@@ -14,8 +13,8 @@ import (
 // Prettier runs in every project without per-project setup.
 type SaveActionsPage struct {
 	ide      *core.IDE
-	reformat *checkbox.Checkbox
-	prettier *checkbox.Checkbox
+	reformat *giode.CheckboxElement
+	prettier *giode.CheckboxElement
 }
 
 // NewSaveActionsPage creates the page.

@@ -32,7 +32,7 @@ func NewSearchPill(ide *core.IDE) *SearchPill {
 			giode.Text("Search files and actions", giode.Styles{Color: c.TextFaint, FontSize: theme.UISize, FlexGrow: 1, MaxLines: 1}),
 			widgets.Keycaps(ide.Shortcut(keymap.SearchEverywhere)),
 		)
-	}).Label("Search Anything").Focusable(false).OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { ide.Run(keymap.SearchEverywhere) }))
+	}).Label("Search Anything").Focusable(false).OnPrimaryClick(func(giode.ClickEvent) { ide.Run(keymap.SearchEverywhere) })
 	return p
 }
 

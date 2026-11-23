@@ -24,7 +24,7 @@ type recentProjectRow struct {
 func newRecentProjectRow(onOpen func(recent.Project), onMenu func(recent.Project, giode.ClickEvent)) *recentProjectRow {
 	r := &recentProjectRow{}
 	r.press = giode.Pressable(r.view).
-		OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { onOpen(r.p) })).
+		OnPrimaryClick(func(giode.ClickEvent) { onOpen(r.p) }).
 		OnSecondaryClick(func(e giode.ClickEvent) { onMenu(r.p, e) })
 	return r
 }

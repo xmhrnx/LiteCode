@@ -5,8 +5,6 @@ import (
 
 	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/keymap"
 	"litecode/ui/core"
@@ -19,9 +17,9 @@ import (
 // effect immediately.
 type KeymapPage struct {
 	ide       *core.IDE
-	search    *input.Input
+	search    *giode.InputElement
 	reset     *giode.ButtonElement
-	list      *scroll.Scroll
+	list      *giode.ScrollElement
 	rows      *giode.KeyedCache[keymap.Action, *keymapRow]
 	recording keymap.Action
 }

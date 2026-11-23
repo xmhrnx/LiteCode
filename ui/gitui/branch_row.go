@@ -5,7 +5,6 @@ import (
 
 	"litecode/internal/git"
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // branchRow is one line of the branches panel. Its fields are refreshed every
@@ -21,7 +20,7 @@ type branchRow struct {
 func newBranchRow(onClick, onDouble func(r *branchRow), onMenu func(r *branchRow, e giode.ClickEvent)) *branchRow {
 	r := &branchRow{}
 	r.press = giode.Pressable(r.view).
-		OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { onClick(r) })).
+		OnPrimaryClick(func(giode.ClickEvent) { onClick(r) }).
 		OnDoubleClick(func(giode.ClickEvent) { onDouble(r) }).
 		OnSecondaryClick(func(e giode.ClickEvent) { onMenu(r, e) })
 	return r

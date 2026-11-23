@@ -5,7 +5,7 @@ go 1.26.6
 require (
 	gioui.org v0.10.2
 	github.com/anthropics/anthropic-sdk-go/v2 v2.13.0
-	github.com/xmhrnx/giode v1.0.28-alpha.1
+	github.com/xmhrnx/giode v1.0.30-alpha.1
 )
 
 require (

@@ -2,7 +2,6 @@ package assistant
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/copybutton"
 
 	"litecode/internal/llm"
 	"litecode/ui/theme"
@@ -14,7 +13,7 @@ type chatMessage struct {
 	key  int // the message's index, for text selection
 	msg  llm.Message
 	note string // a file shared with this message
-	copy *copybutton.CopyButton
+	copy *giode.CopyButtonElement
 	live bool // still streaming
 }
 

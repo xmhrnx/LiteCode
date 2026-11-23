@@ -2,7 +2,6 @@ package settings
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/llm"
 	"litecode/ui/core"
@@ -16,7 +15,7 @@ type AIPage struct {
 	ide      *core.IDE
 	selected string
 	rows     *giode.KeyedCache[string, *aiProviderRow]
-	list     *scroll.Scroll
+	list     *giode.ScrollElement
 	detail   *AIProviderDetail
 	custom   *AICustomDialog
 	add      *giode.ButtonElement

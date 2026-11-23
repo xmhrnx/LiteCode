@@ -8,8 +8,6 @@ import (
 	"strings"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dialog"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/internal/git"
 	"litecode/ui/core"
@@ -21,11 +19,11 @@ import (
 type CloneDialog struct {
 	ide    *core.IDE
 	open   bool
-	url    *input.Input
-	dir    *input.Input
+	url    *giode.InputElement
+	dir    *giode.InputElement
 	clone  *giode.ButtonElement
 	cancel *giode.ButtonElement
-	dlg    *dialog.Dialog
+	dlg    *giode.DialogElement
 }
 
 // NewCloneDialog creates the dialog.

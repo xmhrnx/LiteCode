@@ -11,8 +11,6 @@ import (
 	"sync"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/layout"
 	"litecode/internal/llm"
@@ -41,8 +39,8 @@ type Window struct {
 	ide     *core.IDE
 	entries []*entry
 	views   *giode.KeyedCache[int, *chatMessage]
-	list    *scroll.Scroll
-	input   *input.Input
+	list    *giode.ScrollElement
+	input   *giode.InputElement
 	send    *sendButton
 	share   *contextChip
 	actions []giode.Element

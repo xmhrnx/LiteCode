@@ -4,7 +4,6 @@ import (
 	"github.com/xmhrnx/giode"
 
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // sendButton is the round button of the composer: send, or stop while a
@@ -30,13 +29,13 @@ func newSendButton(busy func() bool, onSend, onStop func()) *sendButton {
 			}
 		}
 		return giode.Box(st, theme.IconSized(icon, c.AccentText, 15))
-	}).Label("Send").Focusable(false).OnClick(widgets.PrimaryClick(func(giode.ClickEvent) {
+	}).Label("Send").Focusable(false).OnPrimaryClick(func(giode.ClickEvent) {
 		if b.busy() {
 			onStop()
 			return
 		}
 		onSend()
-	}))
+	})
 	return b
 }
 

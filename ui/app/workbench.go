@@ -38,13 +38,12 @@ type Workbench struct {
 	newBranch *gitui.NewBranchDialog
 	settings  *settings.Dialog
 	keys      *Shortcuts
-	focused   bool
 }
 
 // NewWorkbench builds the window for ide.Project. pluginDir is shown in
 // Settings > Plugins.
 func NewWorkbench(ide *core.IDE, pluginDir string, onClose func() bool) *Workbench {
-	w := &Workbench{ide: ide, keys: NewShortcuts(ide), focused: true}
+	w := &Workbench{ide: ide, keys: NewShortcuts(ide)}
 	w.editor = editor.NewEditorArea(ide)
 	w.editor.OnTabsChange = w.saveSession
 	w.status = editor.NewStatusBar(ide, w.editor)
@@ -109,14 +108,9 @@ func (w *Workbench) Close(done func()) {
 	})
 }
 
-// watchFocus saves files when the window loses focus and refreshes git when
-// it comes back.
-func (w *Workbench) watchFocus() {
-	focused := w.ide.App.Focused()
-	if focused == w.focused {
-		return
-	}
-	w.focused = focused
+// FocusChanged saves files when the window loses focus and refreshes git
+// when it comes back.
+func (w *Workbench) FocusChanged(focused bool) {
 	if !focused {
 		w.editor.SaveAll(false, nil)
 		return
@@ -129,7 +123,6 @@ func (w *Workbench) watchFocus() {
 // Layout draws the window.
 func (w *Workbench) Layout(gtx giode.Context) giode.Dimensions {
 	w.keys.Register()
-	w.watchFocus()
 	c := theme.Current()
 	return giode.Box(giode.Styles{Width: -1, Height: -1, FlexDirection: giode.FlexDirectionColumn, Background: c.Editor, BackgroundGradient: theme.Backdrop()},
 		w.title,

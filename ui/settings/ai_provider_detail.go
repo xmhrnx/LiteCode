@@ -8,7 +8,6 @@ import (
 
 	"github.com/xmhrnx/giode"
 	"github.com/xmhrnx/giode/components/combobox"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/internal/llm"
 	"litecode/ui/core"
@@ -21,9 +20,9 @@ import (
 type AIProviderDetail struct {
 	ide       *core.IDE
 	id        string
-	baseURL   *input.Input
-	key       *input.Input
-	model     *combobox.Combobox
+	baseURL   *giode.InputElement
+	key       *giode.InputElement
+	model     *giode.ComboboxElement
 	saveKey   *giode.ButtonElement
 	clearKey  *giode.ButtonElement
 	fetch     *giode.ButtonElement

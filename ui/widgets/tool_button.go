@@ -3,7 +3,6 @@ package widgets
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/tooltip"
 
 	"litecode/ui/theme"
 )
@@ -14,7 +13,7 @@ type ToolButton struct {
 	icon    string
 	toggled func() bool
 	press   *giode.PressableElement
-	tip     *tooltip.Tooltip
+	tip     *giode.TooltipElement
 }
 
 // NewToolButton makes a button showing a registered icon; tooltip may be "".
@@ -37,7 +36,7 @@ func NewToolButtonEvent(icon, tooltip string, onClick func(e giode.ClickEvent)) 
 		}
 		return giode.Box(giode.Styles{Width: 26, Height: 26, BorderRadius: 5, Background: bg, Align: giode.AlignCenter, Justify: giode.JustifyCenter},
 			theme.Icon(b.icon, c.TextMuted))
-	}).Label(tooltip).OnClick(PrimaryClick(onClick))
+	}).Label(tooltip).OnPrimaryClick(onClick)
 	if tooltip != "" {
 		b.tip = giode.Tooltip(b.press, tooltip)
 	}

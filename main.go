@@ -37,16 +37,17 @@ func run() error {
 	}
 	var root *app.Root
 	a := giode.New(giode.Config{
-		Title:      "LiteCode",
-		Size:       image.Pt(1440, 900),
-		MinSize:    image.Pt(720, 480),
-		Resizable:  true,
-		Frameless:  true,
-		Center:     true,
-		Background: theme.Current().Editor,
-		Font:       theme.UIFont,
-		Icon:       assets.AppIcon,
-		OnFileDrop: func(paths []string) { root.HandleDrop(paths) },
+		Title:         "LiteCode",
+		Size:          image.Pt(1440, 900),
+		MinSize:       image.Pt(720, 480),
+		Resizable:     true,
+		Frameless:     true,
+		Center:        true,
+		Background:    theme.Current().Editor,
+		Font:          theme.UIFont,
+		Icon:          assets.AppIcon,
+		OnFileDrop:    func(paths []string) { root.HandleDrop(paths) },
+		OnFocusChange: func(focused bool) { root.FocusChanged(focused) },
 		SingleInstanceLock: &giode.SingleInstanceLock{
 			UniqueID: "litecode-6f1d2b7e",
 			OnLaunchArgs: func(args []string) {

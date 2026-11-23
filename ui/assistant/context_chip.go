@@ -4,10 +4,8 @@ import (
 	"path/filepath"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/tooltip"
 
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // contextChip toggles sharing the open file with the next message.
@@ -15,7 +13,7 @@ type contextChip struct {
 	on    bool
 	file  func() string
 	press *giode.PressableElement
-	tip   *tooltip.Tooltip
+	tip   *giode.TooltipElement
 }
 
 func newContextChip(file func() string) *contextChip {
@@ -34,7 +32,7 @@ func newContextChip(file func() string) *contextChip {
 			st.Background = c.Hover
 		}
 		return giode.Row(st, theme.IconSized("file-code", fg, 12), giode.Text(filepath.Base(name), giode.Styles{Color: fg, FontSize: 11}))
-	}).Label("Share open file").Focusable(false).OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { ch.on = !ch.on }))
+	}).Label("Share open file").Focusable(false).OnPrimaryClick(func(giode.ClickEvent) { ch.on = !ch.on })
 	ch.tip = giode.Tooltip(ch.press, "Send the open file with your message")
 	return ch
 }

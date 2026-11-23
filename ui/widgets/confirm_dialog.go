@@ -2,7 +2,6 @@ package widgets
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dialog"
 
 	"litecode/ui/theme"
 )
@@ -14,7 +13,7 @@ type ConfirmDialog struct {
 	message string
 	yes     *giode.ButtonElement
 	no      *giode.ButtonElement
-	dlg     *dialog.Dialog
+	dlg     *giode.DialogElement
 	onYes   func()
 }
 

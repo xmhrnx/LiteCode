@@ -2,9 +2,6 @@ package welcome
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
-	"github.com/xmhrnx/giode/components/titlebar"
 
 	"litecode/internal/recent"
 	"litecode/ui/core"
@@ -15,14 +12,13 @@ import (
 // Screen is the welcome window's content.
 type Screen struct {
 	ide    *core.IDE
-	bar    *titlebar.TitleBar
-	search *input.Input
+	bar    *giode.TitleBarElement
+	search *giode.InputElement
 	open   *giode.ButtonElement
 	clone  *giode.ButtonElement
 	cloneD *CloneDialog
-	list   *scroll.Scroll
+	list   *giode.ScrollElement
 	rows   *giode.KeyedCache[string, *recentProjectRow]
-	menus  widgets.MenuSlot
 }
 
 // NewScreen creates the welcome screen.
@@ -46,11 +42,11 @@ func NewScreen(ide *core.IDE) *Screen {
 
 func (s *Screen) menu(p recent.Project, e giode.ClickEvent) {
 	path := p.Path
-	s.menus.Open(theme.NewMenu().
+	theme.NewMenu().
 		Item("Open", func() { s.ide.OpenProject(path) }).
 		Item("Copy Path", func() { s.ide.App.SetClipboard(path) }).
 		Separator().
-		Item("Remove from Recent", func() { s.ide.Error(s.ide.Recent.Remove(path)) }), e)
+		Item("Remove from Recent", func() { s.ide.Error(s.ide.Recent.Remove(path)) }).OpenAtClick(e)
 }
 
 func (s *Screen) listView() giode.Element {
@@ -111,6 +107,6 @@ func (s *Screen) Layout(gtx giode.Context) giode.Dimensions {
 	return giode.Stack(giode.Styles{Width: -1, Height: -1, Background: c.Editor, BackgroundGradient: theme.Backdrop()},
 		s.bar,
 		giode.Row(giode.Styles{Width: -1, FlexGrow: 1, Justify: giode.JustifyCenter, Padding: giode.SymmetricInset(24, 0)}, column),
-		s.cloneD, &s.menus,
+		s.cloneD,
 	).Layout(gtx)
 }

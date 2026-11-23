@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/internal/git"
 	"litecode/internal/layout"
@@ -24,11 +23,10 @@ type LogWindow struct {
 	branches  *BranchesPanel
 	details   *CommitDetails
 	list      *giode.VirtualListElement
-	search    *input.Input
+	search    *giode.InputElement
 	newBranch *NewBranchDialog
 	actions   []giode.Element
 	rows      *giode.KeyedCache[string, *commitRow]
-	menus     widgets.MenuSlot
 
 	branch   string       // "" for all branches
 	commits  []git.Commit // the branch's commits when filtered
@@ -146,14 +144,14 @@ func (w *LogWindow) selectCommit(c git.Commit) {
 
 func (w *LogWindow) commitMenu(c git.Commit, e giode.ClickEvent) {
 	g := w.ide.Project.Git
-	w.menus.Open(theme.NewMenu().
+	theme.NewMenu().
 		Item("Copy Hash", func() { w.ide.App.SetClipboard(c.Hash) }).
 		Item("New Branch…", func() { w.newBranch.Ask(c.Hash) }).
 		Item("Check Out Commit", func() {
 			g.Do(w.ide, "Checking out "+c.Short+"…", func(ctx context.Context, r *git.Repo) error {
 				return r.Checkout(ctx, git.Branch{Name: c.Hash})
 			}, nil)
-		}), e)
+		}).OpenAtClick(e)
 }
 
 // commitList is the list, or a note when there's nothing in it.
@@ -190,6 +188,5 @@ func (w *LogWindow) View() giode.Element {
 		giode.Stack(giode.Styles{FlexGrow: 1, Height: -1}, w.toolbar(), theme.Separator(), giode.Box(giode.Styles{Width: -1, FlexGrow: 1}, w.commitList())),
 		theme.VSeparator(),
 		giode.Box(giode.Styles{Width: 340, Height: -1}, w.details),
-		&w.menus,
 	)
 }

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/ui/core"
 	"litecode/ui/theme"
@@ -18,7 +17,7 @@ type PluginsPage struct {
 	ide    *core.IDE
 	dir    string
 	open   *giode.ButtonElement
-	scroll *scroll.Scroll
+	scroll *giode.ScrollElement
 }
 
 // NewPluginsPage creates the page for plugins kept in dir.

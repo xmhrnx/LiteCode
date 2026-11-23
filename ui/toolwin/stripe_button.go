@@ -2,12 +2,10 @@ package toolwin
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/tooltip"
 
 	"litecode/internal/layout"
 	"litecode/ui/core"
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // StripeButton opens and closes one panel from the activity bar; a
@@ -16,7 +14,7 @@ type StripeButton struct {
 	ide   *core.IDE
 	id    layout.WindowID
 	press *giode.PressableElement
-	tip   *tooltip.Tooltip
+	tip   *giode.TooltipElement
 	menu  *giode.MenuElement
 }
 
@@ -36,7 +34,7 @@ func NewStripeButton(ide *core.IDE, w core.ToolWindow) *StripeButton {
 		}
 		return giode.Box(st, theme.IconSized(w.Icon(), fg, 18))
 	}).Label(w.Title()).
-		OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { ide.Run(panelActions[b.id]) })).
+		OnPrimaryClick(func(giode.ClickEvent) { ide.Run(panelActions[b.id]) }).
 		OnSecondaryClick(b.menu.OpenAtClick)
 	b.tip = giode.Tooltip(b.press, w.Title()+shortcutHint(ide, w.ID()))
 	return b

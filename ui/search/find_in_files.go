@@ -11,7 +11,6 @@ import (
 
 	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/internal/diff"
 	isearch "litecode/internal/search"
@@ -32,8 +31,8 @@ const (
 type FindInFiles struct {
 	ide       *core.IDE
 	popup     *widgets.Popup
-	field     *input.Input
-	mask      *input.Input
+	field     *giode.InputElement
+	mask      *giode.InputElement
 	caseChip  *toggleChip
 	wordsChip *toggleChip
 	regexChip *toggleChip
@@ -154,7 +153,7 @@ func (f *FindInFiles) row(i int) giode.Element {
 				bg = c.Hover
 			}
 			return giode.Row(giode.Styles{Width: -1, Height: 24, Background: bg, BackgroundGradient: theme.RowWash(i == f.highlight), BorderRadius: 7, Margin: giode.SymmetricInset(6, 0), Align: giode.AlignCenter, Gap: 12, Wrap: giode.WrapNoWrap, Padding: giode.SymmetricInset(12, 0)},
-				giode.Box(giode.Styles{FlexGrow: 1, Height: 18, Overflow: giode.OverflowHidden}, matchLine(m)),
+				giode.Box(giode.Styles{FlexGrow: 1}, matchLine(m)),
 				giode.Text(path.Base(m.Path)+" "+strconv.Itoa(m.Line), giode.Styles{Color: c.TextMuted, FontSize: theme.SmallSize, MaxLines: 1}))
 		}).Focusable(false).
 			OnClick(func(giode.ClickEvent) { f.highlight = i }).

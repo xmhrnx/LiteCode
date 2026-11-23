@@ -5,7 +5,6 @@ import (
 
 	"litecode/internal/llm"
 	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
 // aiProviderRow is one provider in the AI page's list: its icon, name, and
@@ -20,7 +19,7 @@ type aiProviderRow struct {
 
 func newAIProviderRow(onClick func(id string)) *aiProviderRow {
 	r := &aiProviderRow{}
-	r.press = giode.Pressable(r.view).Focusable(false).OnClick(widgets.PrimaryClick(func(giode.ClickEvent) { onClick(r.p.ID) }))
+	r.press = giode.Pressable(r.view).Focusable(false).OnPrimaryClick(func(giode.ClickEvent) { onClick(r.p.ID) })
 	return r
 }
 

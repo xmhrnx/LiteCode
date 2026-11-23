@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/git"
 	"litecode/ui/core"
@@ -21,7 +20,7 @@ type CommitDetails struct {
 	message string
 	files   []git.Change
 	loading bool
-	list    *scroll.Scroll
+	list    *giode.ScrollElement
 	rows    *giode.KeyedCache[string, *giode.PressableElement]
 }
 

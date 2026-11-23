@@ -7,9 +7,6 @@ import (
 	"strings"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/components/scroll"
 
 	"litecode/internal/git"
 	"litecode/internal/keymap"
@@ -31,15 +28,14 @@ type CommitWindow struct {
 	selected  string
 	tracked   *changeGroup
 	untracked *changeGroup
-	list      *scroll.Scroll
-	message   *input.Input
-	amend     *checkbox.Checkbox
+	list      *giode.ScrollElement
+	message   *giode.InputElement
+	amend     *giode.CheckboxElement
 	commit    *giode.ButtonElement
 	push      *giode.ButtonElement
 	actions   []giode.Element
 	confirm   *widgets.ConfirmDialog
 	rows      *giode.KeyedCache[string, *changeRow]
-	menus     widgets.MenuSlot
 }
 
 // NewCommitWindow creates the Commit tool window.
@@ -197,7 +193,7 @@ func (w *CommitWindow) rollback(files []git.Change) {
 
 func (w *CommitWindow) rowMenu(c git.Change, e giode.ClickEvent) {
 	path := c.Path
-	w.menus.Open(theme.NewMenu().
+	theme.NewMenu().
 		Item("Show Diff", func() {
 			if ch, ok := w.change(path); ok {
 				w.ide.ShowDiff(workingTreeDiff(w.ide, ch))
@@ -210,7 +206,7 @@ func (w *CommitWindow) rowMenu(c git.Change, e giode.ClickEvent) {
 				w.rollback([]git.Change{ch})
 			}
 		}).
-		Item("Copy Path", func() { w.ide.App.SetClipboard(filepath.FromSlash(path)) }), e)
+		Item("Copy Path", func() { w.ide.App.SetClipboard(filepath.FromSlash(path)) }).OpenAtClick(e)
 }
 
 func (w *CommitWindow) row(c git.Change) giode.Element {
@@ -273,6 +269,5 @@ func (w *CommitWindow) View() giode.Element {
 			giode.Box(giode.Styles{Width: -1, Height: 110}, w.message),
 			giode.Row(giode.Styles{Width: -1, Gap: 8, Align: giode.AlignCenter, Wrap: giode.WrapNoWrap}, w.commit, w.push)),
 		w.confirm,
-		&w.menus,
 	)
 }

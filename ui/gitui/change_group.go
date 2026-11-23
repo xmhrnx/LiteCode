@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
 
 	"litecode/ui/theme"
 )
@@ -15,7 +14,7 @@ type changeGroup struct {
 	title string
 	count int
 	all   bool
-	check *checkbox.Checkbox
+	check *giode.CheckboxElement
 }
 
 func newChangeGroup(title string, onCheck func(on bool)) *changeGroup {

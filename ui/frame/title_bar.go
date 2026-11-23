@@ -2,7 +2,6 @@ package frame
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/titlebar"
 
 	"litecode/internal/keymap"
 	"litecode/ui/core"
@@ -13,7 +12,7 @@ import (
 // TitleBar is the window's frame: main menu, project and branch widgets on the
 // left; search and settings on the right; then the window buttons.
 type TitleBar struct {
-	bar *titlebar.TitleBar
+	bar *giode.TitleBarElement
 }
 
 // NewTitleBar creates the bar for an open project.

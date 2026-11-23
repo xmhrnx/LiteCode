@@ -6,7 +6,6 @@ import (
 
 	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/ui/core"
 	"litecode/ui/theme"
@@ -17,7 +16,7 @@ import (
 type RecentFiles struct {
 	ide       *core.IDE
 	popup     *widgets.Popup
-	field     *input.Input
+	field     *giode.InputElement
 	rows      *giode.KeyedCache[string, *widgets.ListRow]
 	recent    func() []string
 	shown     []string

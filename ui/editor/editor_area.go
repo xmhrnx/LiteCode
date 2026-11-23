@@ -34,6 +34,8 @@ func NewEditorArea(ide *core.IDE) *EditorArea {
 	a := &EditorArea{ide: ide, views: map[string]*CodeView{}, extras: map[string]giode.Element{}, empty: NewEmptyEditor(ide)}
 	c := theme.Current()
 	a.tabs = giode.DocTabs(giode.Styles{Background: c.Panel, Color: c.Text, BorderColor: c.Separator, FontSize: theme.UISize, Height: theme.TabStripHeight}).
+		Indicator(giode.Color(c.TabActive)).
+		OnPin(func(string, bool) { a.tabsChanged() }).
 		OnSelect(a.selected).
 		OnClose(a.Close).
 		OnCloseTabs(func(ids []string) {
@@ -220,6 +222,11 @@ func (a *EditorArea) SaveAll(withFormat bool, done func()) {
 // Session returns what to reopen next time.
 func (a *EditorArea) Session() workspace.Session {
 	s := workspace.Session{OpenFiles: a.OpenFiles()}
+	for _, t := range a.tabs.Tabs() {
+		if _, ok := a.views[t.ID]; ok && t.Pinned {
+			s.Pinned = append(s.Pinned, t.ID)
+		}
+	}
 	if _, ok := a.views[a.tabs.Selected()]; ok {
 		s.Selected = a.tabs.Selected()
 	}
@@ -236,7 +243,7 @@ func (a *EditorArea) Restore(s workspace.Session) {
 		path := p
 		v := NewCodeView(a.ide, doc, func() { a.tabs.SetModified(path, a.views[path].Modified()) })
 		a.views[path] = v
-		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path, Icon: theme.FileIcon(v.Title(), false)})
+		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path, Icon: theme.FileIcon(v.Title(), false), Pinned: slices.Contains(s.Pinned, path)})
 		a.recent = append(a.recent, path)
 	}
 	sel := s.Selected

@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/scroll"
 	"github.com/xmhrnx/giode/styles/properties"
 
 	"litecode/internal/highlight"
@@ -31,7 +30,7 @@ type metrics struct {
 	gutterW   float32
 	pxPerDp   float32
 	viewH     float32 // the visible height, as of the last frame
-	textW     float32 // the text area's width, as of the last frame
+	viewW     float32 // the visible width, gutter included, as of the last frame
 	measuredF int     // the font size charW was measured at
 }
 
@@ -48,9 +47,12 @@ type TextEditor struct {
 	sel   textbuf.Selection
 	wantX int // the screen column Up and Down aim for; -1 takes the caret's
 
-	scrollCol int  // the first screen column shown
-	follow    bool // scroll the caret into view on the next frame
-	center    bool // and put it mid-screen (after Go to Line)
+	follow bool // scroll the caret into view on the next frame
+	center bool // and put it mid-screen (after Go to Line)
+
+	widest     int // the widest line's screen columns
+	widestRev  int // the buffer revision widest was measured at
+	widestTabs int // and the tab size
 
 	dragging  bool
 	dragUnit  int // 1 by rune, 2 by word, 3 by line
@@ -58,7 +60,7 @@ type TextEditor struct {
 
 	m        metrics
 	keys     *giode.KeyboardInputElement
-	scroll   *scroll.Scroll
+	scroll   *giode.ScrollElement
 	press    *giode.PressableElement
 	onChange func()
 }
@@ -71,32 +73,18 @@ func NewTextEditor(ide *core.IDE, l *lang.Language, text string, onChange func()
 	e.press = giode.Pressable(e.lines, giode.Styles{Cursor: giode.CursorText}).
 		Focusable(false).
 		Label("Code").
-		OnClick(redrawn(e, e.clicked)).
-		OnDragStart(redrawn(e, e.dragStarted)).
-		OnDragMove(redrawn(e, e.dragMoved)).
+		DragThreshold(0).
+		OnPress(e.pressed).
+		OnDragStart(func(giode.DragEvent) { e.dragging = true }).
+		OnDragMove(e.dragMoved).
 		OnDragEnd(func(giode.DragEvent) { e.dragging = false })
-	e.scroll = giode.Scroll(func() giode.Element { return e.press }, giode.Styles{Background: c.Editor, ScrollBar: theme.ScrollBar()})
+	e.scroll = giode.Scroll(func() giode.Element { return e.press }, giode.Styles{Background: c.Editor, ScrollBar: theme.ScrollBar()}).
+		Axis(giode.Vertical | giode.Horizontal)
 	e.keys = giode.KeyboardInput(e.scroll).
-		OnText(redrawn(e, e.typed)).
-		OnKey(func(ev giode.KeyEvent) bool {
-			took := e.key(ev)
-			if took {
-				e.ide.App.Invalidate()
-			}
-			return took
-		}).
+		OnText(e.typed).
+		OnKey(e.key).
 		Label("Code editor")
 	return e
-}
-
-// redrawn wraps an input handler to ask for another frame after it: what
-// laid out before the editor this frame (the status bar) shows the
-// change then.
-func redrawn[T any](e *TextEditor, fn func(T)) func(T) {
-	return func(v T) {
-		fn(v)
-		e.ide.App.Invalidate()
-	}
 }
 
 // Text is the whole text.
@@ -142,20 +130,47 @@ func (e *TextEditor) codeStyle(color string) giode.Styles {
 	return giode.Styles{FontFamily: theme.CodeFont, FontSize: properties.FontSize(e.m.fontSize), Color: color}
 }
 
-// offsetDp is the vertical scroll offset in dp.
-func (e *TextEditor) offsetDp() float32 {
+// dp converts pixels to dp.
+func (e *TextEditor) dp(px float32) float32 {
 	if e.m.pxPerDp == 0 {
 		return 0
 	}
-	return e.scroll.Offset() / e.m.pxPerDp
+	return px / e.m.pxPerDp
 }
 
-// lines is what scrolls: the gutter and the text, as tall as the lines.
+// offsetDp is the vertical scroll offset in dp; offsetXDp the sideways one.
+func (e *TextEditor) offsetDp() float32  { return e.dp(e.scroll.Offset()) }
+func (e *TextEditor) offsetXDp() float32 { return e.dp(e.scroll.OffsetX()) }
+
+// widestLine is the widest line's width in screen columns, measured again
+// after the text changes.
+func (e *TextEditor) widestLine() int {
+	tab := e.tabSize()
+	if e.widestRev == e.buf.Rev() && e.widestTabs == tab {
+		return e.widest
+	}
+	w := 0
+	for i := range e.buf.Lines() {
+		line := e.buf.Line(i)
+		// A line can't take more than tab (or 2) columns a rune.
+		if len(line)*max(tab, 2) <= w {
+			continue
+		}
+		w = max(w, screenCol(line, len(line), tab))
+	}
+	e.widest, e.widestRev, e.widestTabs = w, e.buf.Rev(), tab
+	return w
+}
+
+// lines is what scrolls: the gutter, which sticks to the left edge, and
+// the text, as tall as the lines and as wide as the widest.
 func (e *TextEditor) lines(giode.PressState) giode.Element {
 	h := float32(e.buf.Lines())*e.m.lineH + max(e.m.viewH-3*e.m.lineH, 0)
+	w := max(textPad+float32(e.widestLine()+4)*e.m.charW, e.m.viewW-e.m.gutterW)
 	return giode.Row(giode.Styles{Wrap: giode.WrapNoWrap},
-		giode.Canvas(giode.Styles{Width: properties.Width(e.m.gutterW), Height: properties.Height(h)}, e.paintGutter),
-		giode.Canvas(giode.Styles{FlexGrow: 1, Height: properties.Height(h)}, e.paintText),
+		giode.Box(giode.Styles{Position: giode.PositionStickyStart, Background: theme.Current().Editor},
+			giode.Canvas(giode.Styles{Width: properties.Width(e.m.gutterW), Height: properties.Height(h)}, e.paintGutter)),
+		giode.Canvas(giode.Styles{Width: properties.Width(w), Height: properties.Height(h)}, e.paintText),
 	)
 }
 
@@ -163,7 +178,8 @@ func (e *TextEditor) lines(giode.PressState) giode.Element {
 func (e *TextEditor) Layout(gtx giode.Context) giode.Dimensions {
 	s := e.ide.Settings
 	e.m.fontSize, e.m.lineH, e.m.pxPerDp = s.EditorFontSize, float32(s.EditorLineHeight), gtx.Metric.PxPerDp
-	e.m.viewH = float32(e.scroll.ViewportHeight()) / e.m.pxPerDp
+	e.m.viewH = e.dp(float32(e.scroll.ViewportHeight()))
+	e.m.viewW = e.dp(float32(e.scroll.ViewportWidth()))
 	if e.m.charW == 0 {
 		// Until the first canvas measures it.
 		e.m.charW = float32(e.m.fontSize) * 0.6
@@ -195,15 +211,20 @@ func (e *TextEditor) scrollToCaret() {
 	}
 	e.center = false
 	e.scroll.ScrollTo(max(off, 0) * e.m.pxPerDp)
-	if e.m.textW > 0 {
-		cols := int((e.m.textW - textPad - e.m.charW) / e.m.charW)
-		v := screenCol(e.buf.Line(e.sel.Caret.Line), e.sel.Caret.Col, e.tabSize())
+	// Sideways: keep the caret inside the text area, a few columns in.
+	if room := e.m.viewW - e.m.gutterW; room > 0 {
+		x := textPad + float32(screenCol(e.buf.Line(e.sel.Caret.Line), e.sel.Caret.Col, e.tabSize()))*e.m.charW
+		offX, margin := e.offsetXDp(), 4*e.m.charW
 		switch {
-		case v < e.scrollCol:
-			e.scrollCol = max(0, v-8)
-		case v > e.scrollCol+cols:
-			e.scrollCol = v - cols + 8
+		case x-margin < offX:
+			offX = x - margin
+		case x+margin > offX+room:
+			offX = x + margin - room
 		}
+		if x < room-margin {
+			offX = 0
+		}
+		e.scroll.ScrollToX(max(offX, 0) * e.m.pxPerDp)
 	}
 }
 
@@ -211,7 +232,7 @@ func (e *TextEditor) scrollToCaret() {
 // corner, for the input method's candidate window.
 func (e *TextEditor) caretRect() image.Rectangle {
 	v := screenCol(e.buf.Line(e.sel.Caret.Line), e.sel.Caret.Col, e.tabSize())
-	x := e.m.gutterW + textPad + float32(v-e.scrollCol)*e.m.charW
+	x := e.m.gutterW + textPad + float32(v)*e.m.charW - e.offsetXDp()
 	y := float32(e.sel.Caret.Line)*e.m.lineH - e.offsetDp()
 	px := func(f float32) int { return int(math.Round(float64(f * e.m.pxPerDp))) }
 	return image.Rect(px(x), px(y), px(x+2), px(y+e.m.lineH))

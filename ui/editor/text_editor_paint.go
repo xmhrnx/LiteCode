@@ -54,14 +54,16 @@ func (e *TextEditor) paintGutter(p *giode.Painter) {
 // paintText draws the current line, the selection, the indent guides,
 // the text and the caret.
 func (e *TextEditor) paintText(p *giode.Painter) {
-	e.m.textW = p.Width()
 	cc := theme.CodeScheme()
 	first, last := e.visibleLines()
 	tab := e.tabSize()
-	cols := int(p.Width()/e.m.charW) + 2
+	// The columns in view, and some either side: the scroll applies this
+	// frame's wheel after the text is drawn.
+	fromCol := max(0, int((e.offsetXDp()-textPad)/e.m.charW)-40)
+	toCol := int((e.offsetXDp()+max(e.m.viewW, 1200))/e.m.charW) + 40
 	sel := e.sel.Range()
 	focused := e.keys.Focused()
-	x := func(v int) float32 { return textPad + float32(v-e.scrollCol)*e.m.charW }
+	x := func(v int) float32 { return textPad + float32(v)*e.m.charW }
 	guide := e.guideWidth()
 	for i := first; i <= last; i++ {
 		y := float32(i) * e.m.lineH
@@ -78,34 +80,31 @@ func (e *TextEditor) paintText(p *giode.Painter) {
 				b = screenCol(line, sel.End.Col, tab)
 			}
 			if b > a {
-				l := max(x(a), 0)
-				p.Rect(l, y, x(b)-l, e.m.lineH, 3, cc.Selection)
+				p.Rect(x(a), y, x(b)-x(a), e.m.lineH, 3, cc.Selection)
 			}
 		}
 		if guide > 0 {
 			for v := 0; v < e.indentCols(i); v += guide {
-				if gx := x(v); gx >= textPad {
-					p.Rect(gx, y, 1, e.m.lineH, 0, cc.Guide)
-				}
+				p.Rect(x(v), y, 1, e.m.lineH, 0, cc.Guide)
 			}
 		}
-		e.paintLine(p, line, e.hl.Tokens(e.buf, i), y, cols)
+		e.paintLine(p, line, e.hl.Tokens(e.buf, i), y, fromCol, toCol)
 	}
 	if focused && e.sel.Caret.Line >= first && e.sel.Caret.Line <= last {
 		e.paintCaret(p, x)
 	}
 }
 
-// paintLine draws a line's runes in runs of one color, from the first
-// shown column to the last.
-func (e *TextEditor) paintLine(p *giode.Painter, line []rune, toks []highlight.Token, y float32, cols int) {
+// paintLine draws a line's runes in runs of one color, between two
+// screen columns.
+func (e *TextEditor) paintLine(p *giode.Painter, line []rune, toks []highlight.Token, y float32, fromCol, toCol int) {
 	cc := theme.CodeScheme()
 	tab := e.tabSize()
 	var run strings.Builder
 	runKind, runAt := highlight.Plain, 0
 	flush := func() {
 		if s := run.String(); strings.TrimSpace(s) != "" {
-			px := textPad + float32(runAt-e.scrollCol)*e.m.charW
+			px := textPad + float32(runAt)*e.m.charW
 			p.Text(px, y+e.m.lineH/2, s, giode.TextAnchorLeft, e.codeStyle(cc.Tokens[runKind]))
 		}
 		run.Reset()
@@ -113,7 +112,7 @@ func (e *TextEditor) paintLine(p *giode.Painter, line []rune, toks []highlight.T
 	v, t := 0, 0
 	for i, r := range line {
 		next := advance(v, r, tab)
-		if v-e.scrollCol > cols {
+		if v > toCol {
 			break
 		}
 		for t < len(toks) && toks[t].End <= i {
@@ -123,16 +122,16 @@ func (e *TextEditor) paintLine(p *giode.Painter, line []rune, toks []highlight.T
 		if t < len(toks) && toks[t].Start <= i {
 			k = toks[t].Kind
 		}
-		if next <= e.scrollCol {
+		if next <= fromCol {
 			v = next
 			continue
 		}
 		if k != runKind || run.Len() == 0 || wide(r) {
 			flush()
-			runKind, runAt = k, max(v, e.scrollCol)
+			runKind, runAt = k, max(v, fromCol)
 		}
 		if r == '\t' {
-			run.WriteString(strings.Repeat(" ", next-max(v, e.scrollCol)))
+			run.WriteString(strings.Repeat(" ", next-max(v, fromCol)))
 		} else {
 			run.WriteRune(r)
 		}
@@ -159,9 +158,7 @@ func (e *TextEditor) paintCaret(p *giode.Painter, x func(int) float32) {
 		p.Rect(cx, y+e.m.lineH-3, w, 1, 0, cc.Composition)
 		cx += w
 	}
-	if cx >= textPad-1 {
-		p.Rect(cx-1, y+2, 2, e.m.lineH-4, 1, cc.Caret)
-	}
+	p.Rect(cx-1, y+2, 2, e.m.lineH-4, 1, cc.Caret)
 }
 
 // guideWidth is the columns between indent guides; 0 draws none.

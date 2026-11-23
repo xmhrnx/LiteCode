@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dropdown"
 
 	"litecode/internal/config"
 	"litecode/ui/core"
@@ -20,9 +19,9 @@ var (
 // EditorPage holds the editor font and indentation settings.
 type EditorPage struct {
 	ide        *core.IDE
-	size       *dropdown.Select
-	lineHeight *dropdown.Select
-	tabSize    *dropdown.Select
+	size       *giode.SelectElement
+	lineHeight *giode.SelectElement
+	tabSize    *giode.SelectElement
 }
 
 // NewEditorPage creates the page.
@@ -37,7 +36,7 @@ func NewEditorPage(ide *core.IDE) *EditorPage {
 }
 
 // selectOf makes a dropdown of numbers that reports the chosen one.
-func selectOf(st giode.Styles, options []string, current int, set func(int)) *dropdown.Select {
+func selectOf(st giode.Styles, options []string, current int, set func(int)) *giode.SelectElement {
 	s := giode.Input.Select(st, options...)
 	for i, o := range options {
 		if o == strconv.Itoa(current) {

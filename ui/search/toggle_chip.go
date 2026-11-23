@@ -2,7 +2,6 @@ package search
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/tooltip"
 
 	"litecode/ui/theme"
 )
@@ -10,7 +9,7 @@ import (
 // toggleChip is one of Find in Files' option toggles: "Cc", "W", ".*".
 type toggleChip struct {
 	on  bool
-	tip *tooltip.Tooltip
+	tip *giode.TooltipElement
 }
 
 func newToggleChip(label, tooltipText string, onChange func()) *toggleChip {

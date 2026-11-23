@@ -2,8 +2,6 @@ package widgets
 
 import (
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/dialog"
-	"github.com/xmhrnx/giode/components/input"
 
 	"litecode/ui/theme"
 )
@@ -13,10 +11,10 @@ import (
 type PromptDialog struct {
 	open   bool
 	title  string
-	field  *input.Input
+	field  *giode.InputElement
 	ok     *giode.ButtonElement
 	cancel *giode.ButtonElement
-	dlg    *dialog.Dialog
+	dlg    *giode.DialogElement
 	submit func(string)
 	extra  giode.Element
 }

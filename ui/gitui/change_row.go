@@ -4,7 +4,6 @@ import (
 	"path"
 
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/checkbox"
 
 	"litecode/internal/git"
 	"litecode/ui/theme"
@@ -15,7 +14,7 @@ import (
 type changeRow struct {
 	change   git.Change
 	selected bool
-	check    *checkbox.Checkbox
+	check    *giode.CheckboxElement
 	press    *giode.PressableElement
 }
 
