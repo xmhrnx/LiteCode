@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"litecode/internal/lang"
+	"litecode/internal/proc"
 )
 
 // Timeout bounds a formatter run.
@@ -38,7 +39,7 @@ func Format(ctx context.Context, root, path, text string, l *lang.Language, o Op
 	args := expand(cmd.Args, root, path)
 	ctx, cancel := context.WithTimeout(ctx, Timeout)
 	defer cancel()
-	c := exec.CommandContext(ctx, args[0], args[1:]...)
+	c := proc.Command(ctx, args[0], args[1:]...)
 	c.Dir = root
 	var stdout, stderr bytes.Buffer
 	c.Stdout, c.Stderr = &stdout, &stderr

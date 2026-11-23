@@ -7,8 +7,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os/exec"
 	"strings"
+
+	"litecode/internal/proc"
 )
 
 // Repo is a working tree on disk.
@@ -34,7 +35,7 @@ func (r *Repo) run(ctx context.Context, args ...string) (string, error) {
 }
 
 func (r *Repo) runInput(ctx context.Context, stdin []byte, args ...string) (string, error) {
-	cmd := exec.CommandContext(ctx, "git", append([]string{"-c", "core.quotepath=off", "-c", "color.ui=never"}, args...)...)
+	cmd := proc.Command(ctx, "git", append([]string{"-c", "core.quotepath=off", "-c", "color.ui=never"}, args...)...)
 	cmd.Dir = r.Dir
 	cmd.Env = append(cmd.Environ(), "GIT_TERMINAL_PROMPT=0", "LC_ALL=C")
 	if stdin != nil {

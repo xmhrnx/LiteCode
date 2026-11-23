@@ -6,10 +6,11 @@ import (
 	"context"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"litecode/internal/proc"
 )
 
 // Entry is one item of a directory listing.
@@ -30,7 +31,7 @@ var SkippedDirs = map[string]bool{
 // repository that is tracked plus untracked-but-not-ignored files, so
 // .gitignore is honoured; elsewhere the tree is walked, skipping SkippedDirs.
 func Files(ctx context.Context, root string) ([]string, error) {
-	cmd := exec.CommandContext(ctx, "git", "ls-files", "-co", "--exclude-standard", "-z")
+	cmd := proc.Command(ctx, "git", "ls-files", "-co", "--exclude-standard", "-z")
 	cmd.Dir = root
 	if out, err := cmd.Output(); err == nil {
 		var files []string
