@@ -3,6 +3,7 @@ package keymap
 import (
 	"maps"
 	"sort"
+	"strings"
 
 	"litecode/internal/config"
 )
@@ -146,4 +147,17 @@ func equal(a, b []string) bool {
 		}
 	}
 	return true
+}
+
+// Bound reports whether a stroke runs any action, so an editor leaves it
+// to the keymap instead of acting on it.
+func (k *Keymap) Bound(stroke string) bool {
+	for _, strokes := range k.Bindings {
+		for _, s := range strokes {
+			if strings.EqualFold(s, stroke) {
+				return true
+			}
+		}
+	}
+	return false
 }

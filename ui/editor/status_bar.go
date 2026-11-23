@@ -60,7 +60,7 @@ func (s *StatusBar) properties() []giode.Element {
 	}
 	line, col := v.Caret()
 	indent := "Tab"
-	if u := v.indentUnit(); u != "\t" {
+	if u := v.editor.indentUnit(); u != "\t" {
 		indent = fmt.Sprintf("%d spaces", len(u))
 	}
 	eol := "LF"

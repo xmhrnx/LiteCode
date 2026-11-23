@@ -7,6 +7,7 @@ import (
 
 	"litecode/internal/keymap"
 	"litecode/ui/theme"
+	"litecode/ui/widgets"
 )
 
 // keymapRow is one action of the Keymap page: its name and its strokes.
@@ -35,7 +36,7 @@ func (r *keymapRow) view(s giode.PressState) giode.Element {
 	}
 	var strokes []string
 	for _, st := range r.strokes {
-		strokes = append(strokes, formatStroke(st))
+		strokes = append(strokes, widgets.FormatStroke(st))
 	}
 	right := strings.Join(strokes, ", ")
 	color := c.TextAccent

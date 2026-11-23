@@ -88,7 +88,7 @@ func (a *EditorArea) Open(path string, line, col int) {
 		}
 		v = NewCodeView(a.ide, doc, func() { a.tabs.SetModified(path, a.views[path].Modified()) })
 		a.views[path] = v
-		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path})
+		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path, Icon: theme.FileIcon(v.Title(), false)})
 	}
 	a.tabs.Select(path)
 	a.touch(path)
@@ -106,7 +106,7 @@ func (a *EditorArea) Open(path string, line, col int) {
 // OpenTab opens a tab that isn't a file (a diff) under id.
 func (a *EditorArea) OpenTab(id, title string, el giode.Element) {
 	if _, ok := a.extras[id]; !ok {
-		a.tabs.Add(giode.DocTab{ID: id, Title: title, Tooltip: title})
+		a.tabs.Add(giode.DocTab{ID: id, Title: title, Tooltip: title, Icon: theme.Icon("diff", theme.Current().TextAccent)})
 	}
 	a.extras[id] = el
 	a.tabs.Select(id)
@@ -236,7 +236,7 @@ func (a *EditorArea) Restore(s workspace.Session) {
 		path := p
 		v := NewCodeView(a.ide, doc, func() { a.tabs.SetModified(path, a.views[path].Modified()) })
 		a.views[path] = v
-		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path})
+		a.tabs.Add(giode.DocTab{ID: path, Title: v.Title(), Tooltip: path, Icon: theme.FileIcon(v.Title(), false)})
 		a.recent = append(a.recent, path)
 	}
 	sel := s.Selected

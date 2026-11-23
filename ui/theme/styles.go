@@ -45,11 +45,14 @@ func DialogPanel(width int) giode.Styles {
 		BorderRadius: 16, BoxShadow: giode.BoxShadow{Y: 24, Blur: 60, Color: "#000000B0"}}
 }
 
-// NewMenu creates a menu in the IDE's style. Giode menus draw no border or
-// shadow, so their background is a step lighter than the panels they open over.
+// NewMenu creates a menu in the IDE's style: a raised card with the
+// popups' edge and shadow.
 func NewMenu() *giode.MenuElement {
 	c := Current()
-	return giode.Menu(giode.Styles{Background: c.MenuBg, Color: c.Text, BorderRadius: 12, FontSize: UISize, Padding: giode.UniformInset(5)}).
+	return giode.Menu(giode.Styles{
+		Background: c.MenuBg, Color: c.Text, BorderRadius: 12, FontSize: UISize, Padding: giode.UniformInset(5),
+		BorderWidth: 1, BorderColor: c.PopupLine, BoxShadow: giode.BoxShadow{Y: 12, Blur: 32, Color: "#00000090"},
+	}).
 		HoverColor(c.AccentSoft).SeparatorColor(c.PopupLine)
 }
 

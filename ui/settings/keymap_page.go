@@ -52,7 +52,7 @@ func (p *KeymapPage) clicked(r *keymapRow) {
 
 // record takes the next key press for the action being recorded.
 func (p *KeymapPage) record(e key.Event) bool {
-	if p.recording == "" || e.State != key.Press || isModifier(e.Name) {
+	if p.recording == "" || e.State != key.Press || widgets.IsModifier(e.Name) {
 		return p.recording != ""
 	}
 	a := p.recording
@@ -63,7 +63,7 @@ func (p *KeymapPage) record(e key.Event) bool {
 	case e.Name == key.NameDeleteBackward && e.Modifiers == 0:
 		p.ide.Keymap.Set(a)
 	default:
-		p.ide.Keymap.Set(a, strokeOf(e))
+		p.ide.Keymap.Set(a, widgets.StrokeOf(e))
 	}
 	p.save()
 	return true
@@ -74,7 +74,7 @@ func (p *KeymapPage) matches(a keymap.Action, q string) bool {
 		return true
 	}
 	for _, s := range p.ide.Keymap.Bindings[a] {
-		if strings.Contains(strings.ToLower(formatStroke(s)), q) || strings.Contains(strings.ToLower(s), q) {
+		if strings.Contains(strings.ToLower(widgets.FormatStroke(s)), q) || strings.Contains(strings.ToLower(s), q) {
 			return true
 		}
 	}

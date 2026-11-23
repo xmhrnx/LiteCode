@@ -5,56 +5,32 @@ package editor
 import (
 	"context"
 	"path/filepath"
-	"unicode/utf8"
 
-	"gioui.org/io/key"
 	"github.com/xmhrnx/giode"
-	"github.com/xmhrnx/giode/components/input"
-	"github.com/xmhrnx/giode/styles/properties"
 
 	"litecode/internal/format"
 	"litecode/internal/lang"
+	"litecode/internal/textbuf"
 	"litecode/internal/textops"
 	"litecode/internal/workspace"
 	"litecode/ui/core"
-	"litecode/ui/theme"
-	"litecode/ui/widgets"
 )
 
-// CodeView edits one open file. It's built on Giode's multi-line text field,
-// which has no gutter, highlighting or folding yet (see docs/GIODE_GAPS.md).
+// CodeView is one open file: its document and the editor showing it.
 type CodeView struct {
 	ide      *core.IDE
 	doc      *workspace.Document
 	lang     *lang.Language
-	field    *input.Input
-	text     string // the field's text as of the last change
+	editor   *TextEditor
 	modified bool
 	onChange func()
-	applied  [2]int // font size and line height the field was styled with
 }
 
 // NewCodeView opens a document in a new view; onChange runs after every edit.
 func NewCodeView(ide *core.IDE, doc *workspace.Document, onChange func()) *CodeView {
-	v := &CodeView{ide: ide, doc: doc, lang: ide.Langs.ForPath(doc.Path), text: doc.Saved, onChange: onChange}
-	v.field = widgets.TextField("", v.styles()).Multiline(true).Autocorrect(false).
-		OnChange(widgets.Typing(v.changed)).
-		OnKeys(v.onKey, key.NameTab, key.NameReturn, key.NameEnter)
-	v.field.SetText(doc.Saved)
-	v.field.SetCaret(0)
+	v := &CodeView{ide: ide, doc: doc, lang: ide.Langs.ForPath(doc.Path), onChange: onChange}
+	v.editor = NewTextEditor(ide, v.lang, doc.Saved, v.changed)
 	return v
-}
-
-// styles is the field's style for the current editor settings.
-func (v *CodeView) styles() giode.Styles {
-	c := theme.Current()
-	s := v.ide.Settings
-	v.applied = [2]int{s.EditorFontSize, s.EditorLineHeight}
-	return giode.Styles{
-		Width: -1, Height: -1, Background: c.Editor, Color: c.TextCode, BorderColor: c.Editor, BorderRadius: 1,
-		FontFamily: theme.CodeFont, FontSize: properties.FontSize(s.EditorFontSize), LineHeight: properties.LineHeight(s.EditorLineHeight),
-		TabWidth: giode.TabWidth(s.TabSize), Padding: giode.Inset{Left: 16, Top: 8, Right: 8, Bottom: 8},
-	}
 }
 
 // Path is the file's path.
@@ -67,89 +43,52 @@ func (v *CodeView) Language() *lang.Language { return v.lang }
 func (v *CodeView) Modified() bool { return v.modified }
 
 // Text is the current text.
-func (v *CodeView) Text() string { return v.text }
+func (v *CodeView) Text() string { return v.editor.Text() }
 
 // Focus gives the view the keyboard.
-func (v *CodeView) Focus() { v.field.Focus() }
+func (v *CodeView) Focus() { v.editor.Focus() }
 
 // Caret returns the caret's 1-based line and column.
 func (v *CodeView) Caret() (line, col int) {
-	return textops.LineCol(v.text, v.field.Caret())
+	c := v.editor.Caret()
+	return c.Line + 1, c.Col + 1
 }
 
 // GoTo puts the caret at a 1-based line and column.
 func (v *CodeView) GoTo(line, col int) {
-	pos := textops.Offset(v.text, line, col)
-	v.field.SetCaret(pos)
-	v.field.Focus()
+	v.editor.GoTo(textbuf.Pos{Line: line - 1, Col: col - 1})
+	v.editor.Focus()
 }
 
-func (v *CodeView) changed(text string) {
-	v.text = text
-	v.modified = v.doc.Modified(text)
+func (v *CodeView) changed() {
+	v.modified = v.doc.Modified(v.editor.Text())
 	if v.onChange != nil {
 		v.onChange()
 	}
 }
 
-func (v *CodeView) indentUnit() string {
-	return v.lang.Indent(v.ide.Settings.TabSize)
-}
-
-func (v *CodeView) onKey(e key.Event) {
-	if e.State != key.Press {
-		return
-	}
-	start, end := v.field.Selection()
-	switch e.Name {
-	case key.NameTab:
-		if e.Modifiers.Contain(key.ModShift) {
-			v.apply(textops.Unindent(v.text, start, end, v.indentUnit()))
-		} else {
-			v.apply(textops.Indent(v.text, start, end, v.indentUnit()))
-		}
-	case key.NameReturn, key.NameEnter:
-		v.apply(textops.NewLine(v.text, start, end, v.indentUnit()))
-	}
-}
-
-// apply replaces only what an edit changed, so undo stays fine-grained, and
-// sets the selection it asks for.
-func (v *CodeView) apply(e textops.Edit) {
-	s, en, ins := textops.MinimalReplace(v.text, e.Text)
-	if s != en || ins != "" {
-		v.field.SetSelection(s, en)
-		v.field.InsertText(ins)
-	}
-	if e.Start == e.End {
-		v.field.SetCaret(e.Start)
-	} else {
-		v.field.SetSelection(e.Start, e.End)
-	}
+// line runs a line action on the text and the selection.
+func (v *CodeView) line(action func(text string, start, end int) textops.Edit) {
+	s, e := v.editor.SelectionOffsets()
+	v.editor.applyWhole(action(v.editor.Text(), s, e))
 }
 
 // DuplicateLine is Ctrl+D.
-func (v *CodeView) DuplicateLine() {
-	s, e := v.field.Selection()
-	v.apply(textops.DuplicateLine(v.text, s, e))
-}
+func (v *CodeView) DuplicateLine() { v.line(textops.DuplicateLine) }
 
 // DeleteLine is Ctrl+Y.
-func (v *CodeView) DeleteLine() {
-	s, e := v.field.Selection()
-	v.apply(textops.DeleteLine(v.text, s, e))
-}
+func (v *CodeView) DeleteLine() { v.line(textops.DeleteLine) }
 
 // CommentLine is Ctrl+/.
 func (v *CodeView) CommentLine() {
-	s, e := v.field.Selection()
-	v.apply(textops.ToggleLineComment(v.text, s, e, v.lang.LineComment))
+	v.line(func(text string, s, e int) textops.Edit {
+		return textops.ToggleLineComment(text, s, e, v.lang.LineComment)
+	})
 }
 
 // MoveLine is Alt+Shift+Up/Down.
 func (v *CodeView) MoveLine(dir int) {
-	s, e := v.field.Selection()
-	v.apply(textops.MoveLines(v.text, s, e, dir))
+	v.line(func(text string, s, e int) textops.Edit { return textops.MoveLines(text, s, e, dir) })
 }
 
 // Save writes the file, formatting it first when format is set and a
@@ -169,7 +108,7 @@ func (v *CodeView) write(done func()) {
 		}
 		return
 	}
-	if err := v.doc.Save(v.text); err != nil {
+	if err := v.doc.Save(v.editor.Text()); err != nil {
 		v.ide.Error(err)
 		return
 	}
@@ -197,7 +136,7 @@ func (v *CodeView) Format(done func()) {
 	if v.ide.Project == nil {
 		return
 	}
-	root, path, before, l, o := v.ide.Project.Root, v.doc.Path, v.text, v.lang, v.formatOptions()
+	root, path, before, l, o := v.ide.Project.Root, v.doc.Path, v.editor.Text(), v.lang, v.formatOptions()
 	go func() {
 		out, err := format.Format(context.Background(), root, path, before, l, o)
 		v.ide.App.Post(func() {
@@ -205,9 +144,8 @@ func (v *CodeView) Format(done func()) {
 			case err == format.ErrNoFormatter:
 			case err != nil:
 				v.ide.Error(err)
-			case v.text == before && out != before:
-				caret := min(v.field.Caret(), utf8.RuneCountInString(out))
-				v.apply(textops.Edit{Text: out, Start: caret, End: caret})
+			case v.editor.Text() == before && out != before:
+				v.editor.SetText(out)
 			}
 			if done != nil {
 				done()
@@ -219,10 +157,7 @@ func (v *CodeView) Format(done func()) {
 // Title is the tab title.
 func (v *CodeView) Title() string { return filepath.Base(v.doc.Path) }
 
-// Layout draws the text.
+// Layout draws the editor.
 func (v *CodeView) Layout(gtx giode.Context) giode.Dimensions {
-	if s := v.ide.Settings; v.applied != [2]int{s.EditorFontSize, s.EditorLineHeight} {
-		v.field.Styles(v.styles())
-	}
-	return v.field.Layout(gtx)
+	return v.editor.Layout(gtx)
 }

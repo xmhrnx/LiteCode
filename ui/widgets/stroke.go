@@ -1,4 +1,4 @@
-package settings
+package widgets
 
 import (
 	"strings"
@@ -15,8 +15,8 @@ var keyNames = map[key.Name]string{
 	key.NamePageDown: "PageDown", key.NameHome: "Home", key.NameEnd: "End",
 }
 
-// isModifier reports whether a key is a modifier pressed on its own.
-func isModifier(n key.Name) bool {
+// IsModifier reports whether a key is a modifier pressed on its own.
+func IsModifier(n key.Name) bool {
 	switch n {
 	case key.NameShift, key.NameCtrl, key.NameAlt, key.NameCommand, key.NameSuper:
 		return true
@@ -24,10 +24,10 @@ func isModifier(n key.Name) bool {
 	return false
 }
 
-// strokeOf writes a key press as a shortcut spec ("Mod+Shift+N"). The
+// StrokeOf writes a key press as a shortcut spec ("Mod+Shift+N"). The
 // platform's shortcut modifier (Ctrl, or Command on macOS) is written "Mod",
 // so a keymap carries over between systems.
-func strokeOf(e key.Event) string {
+func StrokeOf(e key.Event) string {
 	var parts []string
 	m := e.Modifiers
 	if m.Contain(key.ModShortcut) {
@@ -53,8 +53,8 @@ func strokeOf(e key.Event) string {
 	return strings.Join(append(parts, name), "+")
 }
 
-// formatStroke shows a stroke the platform's way.
-func formatStroke(s string) string {
+// FormatStroke shows a stroke the platform's way.
+func FormatStroke(s string) string {
 	if s == "DoubleShift" {
 		return "Double ⇧"
 	}

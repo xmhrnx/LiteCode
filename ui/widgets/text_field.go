@@ -28,3 +28,7 @@ func Typing(fn func(string)) func(string) {
 
 // TypedCount is the number of edits made in any text field so far.
 func TypedCount() uint64 { return typed.Load() }
+
+// NoteTyping counts text typed somewhere other than a text field (the
+// code editor), so double Shift isn't taken for two capitals.
+func NoteTyping() { typed.Add(1) }

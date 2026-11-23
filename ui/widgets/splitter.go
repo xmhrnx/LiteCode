@@ -27,10 +27,10 @@ func NewSplitter(vertical bool, sign int, size func() int, resize func(int), don
 		}
 		// The gap between two cards is the handle; a pill lights up in it
 		// while it's hovered or dragged.
-		hit := giode.Styles{Align: giode.AlignCenter, Justify: giode.JustifyCenter, Cursor: giode.CursorGrab}
+		hit := giode.Styles{Align: giode.AlignCenter, Justify: giode.JustifyCenter, Cursor: giode.CursorRowResize}
 		bar := giode.Styles{Background: line, BorderRadius: 1}
 		if vertical {
-			hit.Width, hit.Height = theme.CardGap, -1
+			hit.Width, hit.Height, hit.Cursor = theme.CardGap, -1, giode.CursorColResize
 			bar.Width, bar.Height = 2, 48
 		} else {
 			hit.Width, hit.Height = -1, theme.CardGap

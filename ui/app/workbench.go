@@ -59,7 +59,7 @@ func NewWorkbench(ide *core.IDE, pluginDir string, onClose func() bool) *Workben
 	w.log = gitui.NewLogWindow(ide, w.newBranch)
 	ide.Windows = map[layout.WindowID]core.ToolWindow{}
 	w.assistant = assistant.New(ide)
-	for _, tw := range []core.ToolWindow{w.project, w.commit, w.log, terminal.New(), w.assistant} {
+	for _, tw := range []core.ToolWindow{w.project, w.commit, w.log, terminal.New(ide), w.assistant} {
 		ide.Windows[tw.ID()] = tw
 	}
 	w.everyw = search.NewSearchEverywhere(ide)

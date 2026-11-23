@@ -81,14 +81,14 @@ features you mentioned.
 | Frame | Custom title bar: main menu (☰), project widget with **recent projects**, branch widget, Search, Settings, window buttons | Run configs, run/debug (later) |
 | Look | LiteCode's own design (not a copy): cool dark neutrals, violet accent, hairline separators, Lucide icons tinted per language, Inter 13 for UI, JetBrains Mono 13 for code | Light theme (palette is ready, colours later) |
 | Tool windows | Left / Right / Bottom docks, stripes, **Move to → Left/Right/Bottom** on any tool window incl. Terminal, drag-to-resize, Shift+Esc hide, Ctrl+Shift+F12 hide all, layout saved per user | Float/window modes |
-| Editor | Multiple files in tabs (close/others/right/all, modified dot, reorder), Ctrl+Tab / Alt+←/→, Ctrl+E recent files, line ops (Ctrl+D, Ctrl+Y, Ctrl+/, Alt+Shift+↑/↓), Ctrl+G, Ctrl+S, status bar (line:col, language, branch) | Highlighting, gutter, completion — need a Giode code editor (see GIODE_GAPS.md) |
+| Editor | LiteCode's own code editor: syntax highlighting for the built-in languages (plugins add keywords), line-number gutter, current line, indent guides, selection by mouse (click, drag, double-click word, triple-click or gutter click line), smart Home, word moves, auto-closing brackets and quotes, smart Enter and Backspace, Tab/Shift+Tab indent, undo/redo with typing merged into steps, copy/cut a whole line with nothing selected, input-method composition. Multiple files in tabs with file icons, Ctrl+Tab / Alt+←/→, Ctrl+E recent files, line ops (Ctrl+D, Ctrl+Y, Ctrl+/, Alt+Shift+↑/↓), Ctrl+G, Ctrl+S, status bar | Find/replace in file, completion, folding, multi-caret, VCS gutter markers, horizontal wheel scrolling (see GIODE_GAPS.md) |
 | Formatting | **Global** "format on save" with Prettier (project `node_modules/.bin/prettier`, else PATH) and per-language formatters (gofmt, …) from plugins — no per-project setup | ESLint |
 | Navigation | Search Everywhere (double Shift), Go to File (Ctrl+Shift+N), Find in Files (Ctrl+Shift+F) with results + preview, Find Action (Ctrl+Shift+A) | Symbols/classes (needs language servers) |
 | Git | Commit window (tree, checkboxes, unversioned, message, amend, Commit / Commit and Push, rollback), Git log window (branches tree, commit list with ref labels, details + changed files), side-by-side diff, branches popup (new, checkout, merge, delete, push, update/fetch), Ctrl+K / Ctrl+Shift+K / Ctrl+T | Graph lines, interactive rebase, merge resolver, blame (later) |
 | Keymap | Ctrl-based defaults familiar from IntelliJ-style editors, user overrides in `keymap.json`, editable in Settings | Alternate keymaps (Mac, VS Code) — later as files |
 | Projects | Welcome screen with searchable recent projects, Open Folder, Clone | New-project wizards |
 | Plugins | Declarative language plugins (`plugin.json`): extensions, comment tokens, indent, formatter command, LSP command (reserved), run command | Marketplace |
-| Terminal | Tool window slot, movable like any other | Emulator — needs Giode Terminal component |
+| Terminal | The user's shell in the project folder (Giode Terminal: colors, alternate screen, scrollback, selection, mouse), themed to match, restart button, movable like any other panel | Several sessions in tabs |
 
 ## 3. Why it should be light
 

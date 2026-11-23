@@ -63,13 +63,13 @@ func (s *Shortcuts) doubleShiftAction() keymap.Action {
 	return ""
 }
 
-// watchShift sees every key nothing else took and fires on Shift, Shift.
-func (s *Shortcuts) watchShift(e key.Event) bool {
+// watchShift sees every key, whatever took it, and fires on Shift, Shift.
+func (s *Shortcuts) watchShift(e key.Event) {
 	if e.Name != key.NameShift {
 		if e.State == key.Press {
 			s.lastShift, s.dirty = time.Time{}, s.shiftDown
 		}
-		return false
+		return
 	}
 	now := time.Now()
 	if e.State == key.Press {
@@ -80,9 +80,9 @@ func (s *Shortcuts) watchShift(e key.Event) bool {
 			if a := s.doubleShiftAction(); a != "" {
 				s.ide.Run(a)
 			}
-			return true
+			return
 		}
-		return false
+		return
 	}
 	s.shiftDown = false
 	if !s.dirty {
@@ -93,7 +93,6 @@ func (s *Shortcuts) watchShift(e key.Event) bool {
 		s.lastShift = time.Time{}
 	}
 	s.dirty = false
-	return false
 }
 
 // Register installs the shortcuts for this frame. Call it from the view.
@@ -105,5 +104,5 @@ func (s *Shortcuts) Register() {
 		s.rebuild()
 	}
 	giode.Shortcuts(s.table...)
-	giode.OnKey(s.watchShift)
+	giode.WatchKeys(s.watchShift)
 }
