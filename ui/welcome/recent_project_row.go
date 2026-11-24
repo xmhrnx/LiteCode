@@ -54,8 +54,8 @@ func (r *recentProjectRow) view(s giode.PressState) giode.Element {
 	}
 	if s.Hovered {
 		st.BorderColor = c.FocusLine
-		st.BackgroundGradient = giode.Linear(160, "#211D3D", c.Card)
-		st.BoxShadow = giode.BoxShadow{Y: 10, Blur: 28, Color: "#5B4BE040"}
+		st.BackgroundGradient = giode.Linear(160, c.TileFrom, c.Card)
+		st.BoxShadow = giode.BoxShadow{Y: 10, Blur: 28, Color: c.SoftGlow}
 	}
 	return giode.Box(st,
 		giode.Row(giode.Styles{Width: -1, Align: giode.AlignCenter, Wrap: giode.WrapNoWrap},

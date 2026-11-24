@@ -42,17 +42,18 @@ func (w *Window) Icon() string        { return "panel-terminal" }
 // HeaderActions is the restart button.
 func (w *Window) HeaderActions() []giode.Element { return []giode.Element{w.restart} }
 
-// palette is the terminal's colors, matched to the editor's.
+// palette is the terminal's colors, from the editor's: theme tokens, so
+// it follows a theme change.
 func palette() giode.TerminalPalette {
 	c, cc := theme.Current(), theme.CodeScheme()
-	return giode.TerminalPalette{
+	p := giode.TerminalPalette{
 		Foreground: giode.Color(c.TextCode), Background: giode.Color(c.Editor),
 		Cursor: giode.Color(cc.Caret), Selection: giode.Color(cc.Selection),
-		ANSI: [16]giode.Color{
-			"#2A2C36", "#F07A93", "#A5D88A", "#F5C451", "#82AAFF", "#C792EA", "#7FD6C2", "#D3D5DC",
-			"#636776", "#FF8FA6", "#B9E79F", "#FFD675", "#9DBDFF", "#D7A8F2", "#97E3D2", "#FFFFFF",
-		},
 	}
+	for i, a := range cc.ANSI {
+		p.ANSI[i] = giode.Color(a)
+	}
+	return p
 }
 
 // start runs the shell in the project's folder.

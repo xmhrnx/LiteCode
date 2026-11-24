@@ -31,9 +31,9 @@ func Code(color string) giode.Styles {
 func PopupPanel(width int) giode.Styles {
 	c := Current()
 	return giode.Styles{
-		Width: properties.Width(width), Background: c.Raised, BackgroundGradient: giode.Linear(180, "#22232D", c.Raised),
+		Width: properties.Width(width), Background: c.Raised, BackgroundGradient: giode.Linear(180, c.PopupTop, c.Raised),
 		BorderRadius: 16, BorderWidth: 1, BorderColor: c.PopupLine,
-		BoxShadow: giode.BoxShadow{Y: 24, Blur: 60, Spread: 2, Color: "#000000B0"}, FlexDirection: giode.FlexDirectionColumn,
+		BoxShadow: giode.BoxShadow{Y: 24, Blur: 60, Spread: 2, Color: c.Shadow}, FlexDirection: giode.FlexDirectionColumn,
 		Overflow: giode.OverflowHidden,
 	}
 }
@@ -41,8 +41,8 @@ func PopupPanel(width int) giode.Styles {
 // DialogPanel is the style of modal dialogs.
 func DialogPanel(width int) giode.Styles {
 	c := Current()
-	return giode.Styles{Width: properties.Width(width), Background: c.Raised, BackgroundGradient: giode.Linear(180, "#22232D", c.Raised),
-		BorderRadius: 16, BoxShadow: giode.BoxShadow{Y: 24, Blur: 60, Color: "#000000B0"}}
+	return giode.Styles{Width: properties.Width(width), Background: c.Raised, BackgroundGradient: giode.Linear(180, c.PopupTop, c.Raised),
+		BorderRadius: 16, BoxShadow: giode.BoxShadow{Y: 24, Blur: 60, Color: c.Shadow}}
 }
 
 // NewMenu creates a menu in the IDE's style: a raised card with the
@@ -51,7 +51,7 @@ func NewMenu() *giode.MenuElement {
 	c := Current()
 	return giode.Menu(giode.Styles{
 		Background: c.MenuBg, Color: c.Text, BorderRadius: 12, FontSize: UISize, Padding: giode.UniformInset(5),
-		BorderWidth: 1, BorderColor: c.PopupLine, BoxShadow: giode.BoxShadow{Y: 12, Blur: 32, Color: "#00000090"},
+		BorderWidth: 1, BorderColor: c.PopupLine, BoxShadow: giode.BoxShadow{Y: 12, Blur: 32, Color: c.Shadow + "/0.8"},
 	}).
 		HoverColor(c.AccentSoft).SeparatorColor(c.PopupLine)
 }

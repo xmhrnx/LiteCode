@@ -24,12 +24,16 @@ type CodeView struct {
 	editor   *TextEditor
 	modified bool
 	onChange func()
+	server   serverState
+	closed   bool
 }
 
 // NewCodeView opens a document in a new view; onChange runs after every edit.
 func NewCodeView(ide *core.IDE, doc *workspace.Document, onChange func()) *CodeView {
 	v := &CodeView{ide: ide, doc: doc, lang: ide.Langs.ForPath(doc.Path), onChange: onChange}
 	v.editor = NewTextEditor(ide, v.lang, doc.Saved, v.changed)
+	v.editor.source = v
+	v.startServer()
 	return v
 }
 
@@ -52,6 +56,12 @@ func (v *CodeView) Focus() { v.editor.Focus() }
 func (v *CodeView) Caret() (line, col int) {
 	c := v.editor.Caret()
 	return c.Line + 1, c.Col + 1
+}
+
+// Complete opens the completion list at the caret.
+func (v *CodeView) Complete() {
+	v.editor.Complete()
+	v.editor.Focus()
 }
 
 // GoTo puts the caret at a 1-based line and column.
@@ -113,6 +123,10 @@ func (v *CodeView) write(done func()) {
 		return
 	}
 	v.modified = false
+	if s := v.server.srv; s != nil {
+		v.syncServer()
+		_ = s.Saved(v.doc.Path)
+	}
 	if v.onChange != nil {
 		v.onChange()
 	}

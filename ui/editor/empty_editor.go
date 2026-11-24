@@ -42,8 +42,8 @@ func (e *EmptyEditor) card() giode.Element {
 	}
 	return giode.Stack(giode.Styles{
 		Width: 380, Padding: giode.SymmetricInset(18, 8), BorderRadius: 14, BorderWidth: 1, BorderColor: c.CardLine,
-		BackgroundGradient: giode.Linear(160, "#1E1C2E", "#17171F"),
-		BoxShadow:          giode.BoxShadow{Y: 18, Blur: 50, Color: "#5B4BE033"},
+		BackgroundGradient: giode.Linear(160, c.TileFrom, c.TileTo),
+		BoxShadow:          giode.BoxShadow{Y: 18, Blur: 50, Color: c.SoftGlow},
 	}, rows...)
 }
 
@@ -55,7 +55,7 @@ func (e *EmptyEditor) Layout(gtx giode.Context) giode.Dimensions {
 		name = e.ide.Project.Name
 	}
 	return giode.Stack(giode.Styles{
-		Width: -1, Height: -1, Background: c.Editor, BackgroundGradient: giode.Linear(180, "#17152A", c.Editor, c.Editor),
+		Width: -1, Height: -1, Background: c.Editor, BackgroundGradient: giode.Linear(180, c.EditorTop, c.Editor, c.Editor),
 		Align: giode.AlignCenter, Justify: giode.JustifyCenter, Gap: 6,
 	},
 		giode.Box(giode.Styles{BorderRadius: 16, BoxShadow: giode.BoxShadow{Y: 10, Blur: 34, Color: c.Glow}}, widgets.ProjectBadge(name, 56)),

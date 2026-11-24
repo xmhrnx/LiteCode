@@ -125,6 +125,9 @@ func (a *EditorArea) Close(id string) {
 }
 
 func (a *EditorArea) remove(id string) {
+	if v := a.views[id]; v != nil {
+		v.Dispose()
+	}
 	delete(a.views, id)
 	delete(a.extras, id)
 	a.recent = slices.DeleteFunc(a.recent, func(s string) bool { return s == id })

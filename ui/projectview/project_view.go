@@ -179,7 +179,23 @@ func (p *ProjectView) row(n giode.TreeNode, s giode.TreeRowState) giode.Element 
 	}
 	row := giode.Row(giode.Styles{Gap: 6, Align: giode.AlignCenter, Wrap: giode.WrapNoWrap, Height: -1}, kids...)
 	row.Context(giode.Keyed("project-menu", fn.path, func() *giode.MenuElement { return p.menu(fn) }))
-	return row
+	// One click opens a file or a folder; the tree alone would want two.
+	press := giode.Keyed("project-click", fn.path, func() *giode.PressableElement {
+		return giode.Pressable(nil, giode.Styles{Width: -1, Height: -1, Cursor: giode.CursorDefault}).Focusable(false).Label(fn.name).
+			OnPrimaryClick(func(giode.ClickEvent) { p.clicked(fn) })
+	})
+	return press.Content(func(giode.PressState) giode.Element { return row })
+}
+
+// clicked selects a row and opens its file, or opens or closes its folder.
+func (p *ProjectView) clicked(fn *fileNode) {
+	p.tree.Select(fn.path)
+	if fn.dir {
+		p.tree.Toggle(fn.path)
+		p.expand(fn)
+		return
+	}
+	p.ide.OpenFile(fn.path, 0, 0)
 }
 
 func (p *ProjectView) menu(fn *fileNode) *giode.MenuElement {

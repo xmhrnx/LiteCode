@@ -9,3 +9,9 @@ This product bundles third-party assets under their own licenses:
   see assets/fonts/OFL-JetBrainsMono.txt
 - Lucide icons (assets/icons/*.svg), ISC License,
   see assets/icons/LICENSE-lucide.txt
+
+Some color themes (ui/theme/ui_themes.go, ui/theme/syntax.go) use the
+palettes of these open-source color schemes, all under the MIT License:
+Dracula (Dracula Theme), Nord (Arctic Ice Studio), Gruvbox (Pavel Pertsev),
+Tokyo Night (enkia), Catppuccin, Solarized (Ethan Schoonover), One Dark and
+One Light (Atom), GitHub themes (GitHub, Inc.).

@@ -26,6 +26,7 @@ const (
 	CommentLine        Action = "editor.toggleComment"
 	MoveLineUp         Action = "editor.moveLineUp"
 	MoveLineDown       Action = "editor.moveLineDown"
+	CodeCompletion     Action = "editor.complete"
 	ShowSettings       Action = "app.settings"
 	OpenProject        Action = "app.openFolder"
 	ProjectWindow      Action = "panel.files"
@@ -52,7 +53,7 @@ var Names = map[Action]string{
 	PreviousTab: "Previous Tab", CloseEditor: "Close Tab", SaveAll: "Save All",
 	ReformatCode: "Format Document", DuplicateLine: "Duplicate Line",
 	DeleteLine: "Delete Line", CommentLine: "Toggle Line Comment", MoveLineUp: "Move Line Up",
-	MoveLineDown: "Move Line Down", ShowSettings: "Settings…", OpenProject: "Open Folder…",
+	MoveLineDown: "Move Line Down", CodeCompletion: "Show Completions", ShowSettings: "Settings…", OpenProject: "Open Folder…",
 	ProjectWindow: "Files", CommitWindow: "Changes", GitWindow: "History", TerminalWindow: "Terminal", AssistantWindow: "Assistant",
 	HideToolWindow: "Hide Panel", HideAllWindows: "Toggle All Panels",
 	CommitAction: "Commit…", PushAction: "Push…", UpdateProject: "Pull",

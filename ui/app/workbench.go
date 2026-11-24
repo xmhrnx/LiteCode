@@ -102,6 +102,7 @@ func (w *Workbench) saveSession() {
 func (w *Workbench) Close(done func()) {
 	w.editor.SaveAll(false, func() {
 		w.saveSession()
+		w.ide.Project.Servers.Stop()
 		if done != nil {
 			done()
 		}

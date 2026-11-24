@@ -37,7 +37,7 @@ func (m *chatMessage) user() giode.Element {
 	return giode.Row(giode.Styles{Width: -1, Justify: giode.JustifyEnd},
 		giode.Stack(giode.Styles{
 			MaxWidth: 520, Gap: 6, Padding: giode.SymmetricInset(14, 10), BorderRadius: 14,
-			BackgroundGradient: giode.Linear(135, "#3A3080", "#2B2560"), BorderWidth: 1, BorderColor: "#463C96",
+			BackgroundGradient: giode.Linear(135, c.BubbleFrom, c.BubbleTo), BorderWidth: 1, BorderColor: c.AccentLine,
 		}, kids...))
 }
 

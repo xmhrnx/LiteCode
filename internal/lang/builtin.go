@@ -7,7 +7,7 @@ func Builtin() []*Language {
 	cStyle := [2]string{"/*", "*/"}
 	return []*Language{
 		{ID: "go", Name: "Go", Extensions: []string{".go"}, LineComment: "//", BlockComment: cStyle, IndentTabs: true,
-			Formatter: &Command{Args: []string{"gofmt"}, Stdin: true}, LSP: &Command{Args: []string{"gopls"}}},
+			Formatter: &Command{Args: []string{"gofmt"}, Stdin: true}},
 		{ID: "gomod", Name: "Go Module", FileNames: []string{"go.mod", "go.work"}, LineComment: "//", IndentTabs: true},
 		{ID: "typescript", Name: "TypeScript", Extensions: []string{".ts", ".tsx", ".mts", ".cts"}, LineComment: "//", BlockComment: cStyle, IndentSize: 2, Prettier: true},
 		{ID: "javascript", Name: "JavaScript", Extensions: []string{".js", ".jsx", ".mjs", ".cjs"}, LineComment: "//", BlockComment: cStyle, IndentSize: 2, Prettier: true},

@@ -2,8 +2,6 @@
 // Mono fonts, the icons, and the styles several components share.
 package theme
 
-import "github.com/xmhrnx/giode"
-
 // Scheme is every color the IDE paints with. Giode's palette has a fixed set
 // of tokens, so the IDE-specific ones live here; Current returns the scheme of
 // the active theme.
@@ -66,9 +64,32 @@ type Scheme struct {
 	Danger  string
 	Warning string
 	Success string
+
+	// Depth and decoration
+	Shadow      string // drop shadows of popups and cards
+	PopupTop    string // top of the popups' vertical gradient
+	ScrollThumb string
+	WashFrom    string // selected-row wash, left to right
+	WashMid     string
+	WashTo      string
+	AccentLine  string // edge of accent-tinted surfaces
+	Rail        string // the commit graph's line
+	HeroFrom    string // welcome banner gradient
+	HeroMid     string
+	HeroTo      string
+	HeroLine    string
+	HeroText    string
+	HeroFaint   string
+	SoftGlow    string // a faint accent glow under feature cards
+	EditorTop   string // top of the empty editor's gradient
+	TileFrom    string // the empty editor's shortcut card
+	TileTo      string
+	BubbleFrom  string // the user's chat bubbles
+	BubbleTo    string
 }
 
-// darkScheme is LiteCode Dark: cool neutrals with a violet accent.
+// darkScheme is LiteCode Dark: cool neutrals with a violet accent, tuned
+// by hand; the other themes are built from a few base colors.
 var darkScheme = Scheme{
 	Backdrop: []string{"#261E4E", "#13121C", "#0C0D11", "#0F1520"},
 	Card:     "#16171D",
@@ -120,31 +141,30 @@ var darkScheme = Scheme{
 	Danger:  "#FF6B6B",
 	Warning: "#F5C451",
 	Success: "#5CCF8F",
+
+	Shadow:      "#000000B0",
+	PopupTop:    "#22232D",
+	ScrollThumb: "#3A3C48",
+	WashFrom:    "#3B3279",
+	WashMid:     "#2A2652",
+	WashTo:      "#1F1C3A",
+	AccentLine:  "#463C96",
+	Rail:        "#3A3466",
+	HeroFrom:    "#2E2466",
+	HeroMid:     "#1C1838",
+	HeroTo:      "#14141C",
+	HeroLine:    "#3A3170",
+	HeroText:    "#B9B4DC",
+	HeroFaint:   "#8A84B8",
+	SoftGlow:    "#5B4BE033",
+	EditorTop:   "#17152A",
+	TileFrom:    "#1E1C2E",
+	TileTo:      "#17171F",
+	BubbleFrom:  "#3A3080",
+	BubbleTo:    "#2B2560",
 }
 
-var current = &darkScheme
-
-// Current returns the active color scheme.
-func Current() *Scheme { return current }
-
-// Apply makes the scheme Giode's palette too, so built-in components
-// (menus, dialogs, tabs, inputs, toasts) match the IDE.
-func Apply() {
-	c := current
-	giode.SetMode(giode.ModeDark)
-	giode.SetPalette(giode.ModeDark, giode.Palette{
-		Primary:    c.Accent,
-		Secondary:  c.TextMuted,
-		Background: c.Editor,
-		Surface:    c.Raised,
-		Text:       c.Text,
-		Border:     c.PopupLine,
-		OnPrimary:  c.AccentText,
-		Muted:      c.TextMuted,
-		Accent:     c.TextAccent,
-		Success:    c.Success,
-		Warning:    c.Warning,
-		Danger:     c.Danger,
-		Info:       c.Accent,
-	})
-}
+// Current returns the active color scheme as theme tokens: they resolve to
+// the active theme's colors when drawn, so a theme change shows at once,
+// also in styles built before it.
+func Current() *Scheme { return &uiTokens }

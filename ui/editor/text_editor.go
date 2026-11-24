@@ -58,6 +58,11 @@ type TextEditor struct {
 	dragUnit  int // 1 by rune, 2 by word, 3 by line
 	dragStart textbuf.Range
 
+	source completionSource // the language server's completions; nil for none
+	comp   *completion      // the open completion list
+	reqSeq int
+	list   *completionList
+
 	m        metrics
 	keys     *giode.KeyboardInputElement
 	scroll   *giode.ScrollElement
@@ -83,7 +88,9 @@ func NewTextEditor(ide *core.IDE, l *lang.Language, text string, onChange func()
 	e.keys = giode.KeyboardInput(e.scroll).
 		OnText(e.typed).
 		OnKey(e.key).
-		Label("Code editor")
+		Label("Code editor").
+		OnBlur(e.closeCompletion)
+	e.list = newCompletionList(e)
 	return e
 }
 
@@ -190,7 +197,24 @@ func (e *TextEditor) Layout(gtx giode.Context) giode.Dimensions {
 		e.scrollToCaret()
 	}
 	e.keys.Caret(e.caretRect())
-	return e.keys.Layout(gtx)
+	if e.comp == nil {
+		return e.keys.Layout(gtx)
+	}
+	return giode.Box(giode.Styles{Width: -1, Height: -1}, e.keys, e.popup()).Layout(gtx)
+}
+
+// popup places the completion list under the word being completed, or
+// above it when there's no room below.
+func (e *TextEditor) popup() giode.Element {
+	c := e.comp
+	line := e.buf.Line(c.start.Line)
+	x := e.m.gutterW + textPad + float32(screenCol(line, c.start.Col, e.tabSize()))*e.m.charW - e.offsetXDp() - 30
+	x = max(4, min(x, e.m.viewW-listWidth-8))
+	y := float32(c.start.Line+1)*e.m.lineH - e.offsetDp() + 2
+	if h := e.list.height(); y+h > e.m.viewH && y-e.m.lineH-h-4 > 0 {
+		y -= e.m.lineH + h + 4
+	}
+	return giode.Box(giode.Styles{Position: giode.PositionAbsolute, Left: properties.Left(x), Top: properties.Top(y), ZIndex: 10}, e.list)
 }
 
 // scrollToCaret scrolls just enough to show the caret, or centers it.

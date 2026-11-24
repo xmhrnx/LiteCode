@@ -123,3 +123,18 @@ func For(id, lineComment string, blockComment [2]string, keywords []string) *Rul
 	}
 	return r
 }
+
+// Words are a language's keywords, constants and built-in types, for
+// completing when no language server is running.
+func (r *Rules) Words() []string {
+	if r == nil {
+		return nil
+	}
+	var out []string
+	for _, m := range []map[string]bool{r.Keywords, r.Constants, r.Types} {
+		for w := range m {
+			out = append(out, w)
+		}
+	}
+	return out
+}

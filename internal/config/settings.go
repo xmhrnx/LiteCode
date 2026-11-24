@@ -6,11 +6,16 @@ type Settings struct {
 	UIFontSize       int    `json:"uiFontSize"`
 	EditorFontSize   int    `json:"editorFontSize"`
 	EditorLineHeight int    `json:"editorLineHeight"`
-	Theme            string `json:"theme"`
-	FormatOnSave     bool   `json:"formatOnSave"`
-	UsePrettier      bool   `json:"usePrettier"`
-	TabSize          int    `json:"tabSize"`
-	ShowWelcome      bool   `json:"showWelcome"`
+	Theme            string `json:"theme"`       // UI theme ID
+	SyntaxTheme      string `json:"syntaxTheme"` // "" goes with the UI theme
+	// Colors changed by hand: UI colors by name ("Accent"), editor colors
+	// by token ("Keyword") or name ("Caret").
+	UIColors     map[string]string `json:"uiColors,omitempty"`
+	CodeColors   map[string]string `json:"codeColors,omitempty"`
+	FormatOnSave bool              `json:"formatOnSave"`
+	UsePrettier  bool              `json:"usePrettier"`
+	TabSize      int               `json:"tabSize"`
+	ShowWelcome  bool              `json:"showWelcome"`
 }
 
 // DefaultSettings are the settings of a fresh install.
@@ -19,7 +24,7 @@ func DefaultSettings() Settings {
 		UIFontSize:       13,
 		EditorFontSize:   13,
 		EditorLineHeight: 20,
-		Theme:            "dark",
+		Theme:            "litecode-dark",
 		FormatOnSave:     true,
 		UsePrettier:      true,
 		TabSize:          4,

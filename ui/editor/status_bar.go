@@ -73,8 +73,13 @@ func (s *StatusBar) properties() []giode.Element {
 		}
 		kids = append(kids, giode.Text(t, st))
 	}
+	lang := v.Language().Name
+	if name := v.ServerName(); name != "" {
+		// The language server giving completions.
+		lang += " · " + name
+	}
 	kids = append(kids, giode.Box(giode.Styles{Background: c.AccentSoft, BorderRadius: 10, Padding: giode.SymmetricInset(9, 2)},
-		giode.Text(v.Language().Name, giode.Styles{Color: c.TextAccent, FontSize: 11, FontWeight: giode.FontWeightMedium})))
+		giode.Text(lang, giode.Styles{Color: c.TextAccent, FontSize: 11, FontWeight: giode.FontWeightMedium})))
 	return kids
 }
 

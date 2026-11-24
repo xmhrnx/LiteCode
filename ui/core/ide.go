@@ -16,6 +16,7 @@ import (
 	"litecode/internal/lang"
 	"litecode/internal/layout"
 	"litecode/internal/recent"
+	"litecode/ui/theme"
 )
 
 // ToolWindow is a panel that docks to a side: Project, Commit, Git, Terminal.
@@ -76,6 +77,7 @@ func New(app *giode.App, pluginDir string) (*IDE, []error) {
 	if ide.Settings, err = config.LoadSettings(); err != nil {
 		errs = append(errs, err)
 	}
+	ide.ApplyTheme()
 	if ide.Keymap, err = keymap.Load(); err != nil {
 		errs = append(errs, err)
 	}
@@ -85,6 +87,12 @@ func New(app *giode.App, pluginDir string) (*IDE, []error) {
 	ide.Langs = lang.NewRegistry(pluginDir)
 	errs = append(errs, ide.Langs.Errors...)
 	return ide, errs
+}
+
+// ApplyTheme makes the theme in the settings the active colors.
+func (ide *IDE) ApplyTheme() {
+	s := ide.Settings
+	theme.Apply(theme.Choice{UI: s.Theme, Syntax: s.SyntaxTheme, UIColors: s.UIColors, Code: s.CodeColors})
 }
 
 // Register binds the code that performs an action.

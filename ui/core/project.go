@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"litecode/internal/git"
+	"litecode/internal/lsp"
 	"litecode/internal/project"
 )
 
@@ -14,6 +15,8 @@ type Project struct {
 	Name string
 	Repo *git.Repo // nil outside a git repository
 	Git  *GitState
+	// Servers are the project's language servers.
+	Servers *lsp.Manager
 
 	files    []string
 	filesErr error
@@ -23,6 +26,7 @@ type Project struct {
 // OpenProject reads what the IDE needs of a project folder.
 func OpenProject(ctx context.Context, root string) *Project {
 	p := &Project{Root: filepath.Clean(root), Name: filepath.Base(root)}
+	p.Servers = lsp.NewManager(p.Root)
 	if repo, err := git.Open(ctx, root); err == nil {
 		p.Repo = repo
 		p.Git = &GitState{repo: repo}

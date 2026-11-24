@@ -72,15 +72,15 @@ func (s *Screen) hero() giode.Element {
 	c := theme.Current()
 	return giode.Row(giode.Styles{
 		Width: -1, Padding: giode.UniformInset(26), Gap: 18, Align: giode.AlignCenter, Wrap: giode.WrapNoWrap,
-		BorderRadius: 18, BorderWidth: 1, BorderColor: "#3A3170",
-		BackgroundGradient: giode.Linear(120, "#2E2466", "#1C1838", "#14141C"),
-		BoxShadow:          giode.BoxShadow{Y: 20, Blur: 60, Color: "#5B4BE033"},
+		BorderRadius: 18, BorderWidth: 1, BorderColor: c.HeroLine,
+		BackgroundGradient: giode.Linear(120, c.HeroFrom, c.HeroMid, c.HeroTo),
+		BoxShadow:          giode.BoxShadow{Y: 20, Blur: 60, Color: c.SoftGlow},
 	},
 		giode.Box(giode.Styles{BorderRadius: 16, BoxShadow: theme.GlowShadow()}, widgets.BrandMark(56)),
 		giode.Stack(giode.Styles{Gap: 4, FlexGrow: 1},
 			giode.Text("Welcome to LiteCode", giode.Styles{Color: c.Text, FontSize: 22, FontWeight: giode.FontWeightSemiBold}),
-			giode.Text("A fast, keyboard-first editor with Git built in.", giode.Styles{Color: "#B9B4DC", FontSize: theme.UISize}),
-			giode.Text("Version "+version(), giode.Styles{Color: "#8A84B8", FontSize: 11})),
+			giode.Text("A fast, keyboard-first editor with Git built in.", giode.Styles{Color: c.HeroText, FontSize: theme.UISize}),
+			giode.Text("Version "+version(), giode.Styles{Color: c.HeroFaint, FontSize: 11})),
 		s.clone, s.open,
 	)
 }

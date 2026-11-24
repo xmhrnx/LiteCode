@@ -19,12 +19,10 @@ var pairs = map[rune]rune{'(': ')', '[': ']', '{': '}', '"': '"', '\'': '\'', '`
 func (e *TextEditor) typed(s string) {
 	widgets.NoteTyping()
 	runes := []rune(s)
-	if len(runes) == 1 {
-		if e.typedPair(runes[0]) {
-			return
-		}
+	if len(runes) != 1 || !e.typedPair(runes[0]) {
+		e.insert(s, textbuf.KindTyping)
 	}
-	e.insert(s, textbuf.KindTyping)
+	e.afterTyping(s)
 }
 
 func (e *TextEditor) typedPair(r rune) bool {
@@ -99,6 +97,14 @@ func (e *TextEditor) key(ev giode.KeyEvent) bool {
 	}
 	mod := ev.Modifiers.Contain(key.ModShortcut)
 	shift := ev.Modifiers.Contain(key.ModShift)
+	if e.comp != nil {
+		if !mod && !shift && e.completionKey(ev.Name) {
+			return true
+		}
+		if ev.Name != key.NameDeleteBackward || mod {
+			e.closeCompletion()
+		}
+	}
 	if ev.Modifiers.Contain(key.ModAlt) {
 		return false
 	}
@@ -111,6 +117,10 @@ func (e *TextEditor) key(ev giode.KeyEvent) bool {
 		e.moveKey(ev.Name, false, shift)
 	case key.NameDeleteBackward:
 		e.backspace()
+		if e.comp != nil {
+			e.refilter()
+			e.requestCompletions()
+		}
 	case key.NameDeleteForward:
 		e.deleteTo(e.right(e.sel.Caret))
 	case key.NameReturn, key.NameEnter:

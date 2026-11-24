@@ -27,7 +27,7 @@ func newContextChip(file func() string) *contextChip {
 		st := giode.Styles{Gap: 5, Align: giode.AlignCenter, BorderRadius: 10, Padding: giode.SymmetricInset(8, 3), BorderWidth: 1, BorderColor: c.PopupLine}
 		fg := c.TextFaint
 		if ch.on {
-			st.Background, st.BorderColor, fg = c.AccentSoft, "#463C96", c.TextAccent
+			st.Background, st.BorderColor, fg = c.AccentSoft, c.AccentLine, c.TextAccent
 		} else if s.Hovered {
 			st.Background = c.Hover
 		}

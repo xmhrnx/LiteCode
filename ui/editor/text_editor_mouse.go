@@ -48,6 +48,7 @@ func (e *TextEditor) pressed(ev giode.ClickEvent) {
 		return
 	}
 	e.Focus()
+	e.closeCompletion()
 	unit := min(max(ev.Clicks, 1), 3)
 	if e.inGutter(ev.PositionDp.X) {
 		unit = 3

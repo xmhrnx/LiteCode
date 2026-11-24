@@ -71,7 +71,7 @@ var fileKinds = map[string]fileKind{
 // FileIcon draws the icon of a file by its name, or a folder.
 func FileIcon(name string, dir bool) giode.Element {
 	if dir {
-		return Icon("folder", "#8C93A8")
+		return Icon("folder", Current().TextMuted)
 	}
 	lower := strings.ToLower(name)
 	switch {

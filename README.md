@@ -23,6 +23,7 @@ With no folder it reopens the last project, or shows the welcome screen.
 | Mod+Shift+F | Find in Files |
 | Mod+E | Recent Files |
 | Mod+G | Go to Line |
+| Ctrl+Space | Show completions (they also open as you type) |
 | Alt+1 / Alt+0 / Alt+9 / Alt+F12 | Files / Changes / History / Terminal panels |
 | Shift+Esc / Mod+Shift+F12 | Hide panel / Toggle all panels |
 | Mod+K / Mod+Shift+K / Mod+T | Commit / Push / Pull |

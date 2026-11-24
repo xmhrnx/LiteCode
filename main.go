@@ -29,7 +29,6 @@ func run() error {
 	if err := theme.LoadIcons(); err != nil {
 		return err
 	}
-	theme.Apply()
 	giode.SecureStore.Service = "dev.litecode.app"
 	pluginDir, err := config.Path("plugins")
 	if err != nil {

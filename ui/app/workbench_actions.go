@@ -69,6 +69,7 @@ func (w *Workbench) registerActions() {
 		keymap.CommentLine:      view(func(v *editor.CodeView) { v.CommentLine() }),
 		keymap.MoveLineUp:       view(func(v *editor.CodeView) { v.MoveLine(-1) }),
 		keymap.MoveLineDown:     view(func(v *editor.CodeView) { v.MoveLine(1) }),
+		keymap.CodeCompletion:   view(func(v *editor.CodeView) { v.Complete() }),
 		keymap.ShowSettings:     w.settings.Open,
 		keymap.OpenProject:      ide.ChooseProject,
 		keymap.ProjectWindow:    showWindow(projectview.WindowID),

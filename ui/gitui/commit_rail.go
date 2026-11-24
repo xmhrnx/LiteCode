@@ -10,7 +10,7 @@ import (
 // vertical rail, open at the ends of the list. Head commits glow.
 func commitRail(first, last, head bool) giode.Element {
 	c := theme.Current()
-	line := giode.Styles{Position: giode.PositionAbsolute, Left: 6, Width: 2, Background: "#3A3466"}
+	line := giode.Styles{Position: giode.PositionAbsolute, Left: 6, Width: 2, Background: theme.Current().Rail}
 	if first {
 		line.Top = 12
 	} else {

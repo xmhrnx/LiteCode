@@ -40,6 +40,7 @@ func Default() *Keymap {
 		CommentLine:        {"Mod+/"},
 		MoveLineUp:         {"Alt+Shift+Up"},
 		MoveLineDown:       {"Alt+Shift+Down"},
+		CodeCompletion:     {"Ctrl+Space"},
 		ShowSettings:       {"Mod+Alt+S"},
 		ProjectWindow:      {"Alt+1"},
 		GitWindow:          {"Alt+9"},

@@ -27,7 +27,7 @@ func AccentGradient() *properties.LinearGradient {
 func Card(bg string) giode.Styles {
 	return giode.Styles{
 		Background: bg, BorderRadius: CardRadius, BorderWidth: 1, BorderColor: Current().CardLine,
-		BoxShadow: giode.BoxShadow{Y: 6, Blur: 18, Color: "#00000066"}, Overflow: giode.OverflowHidden,
+		BoxShadow: giode.BoxShadow{Y: 6, Blur: 18, Color: Current().Shadow + "/0.55"}, Overflow: giode.OverflowHidden,
 	}
 }
 
@@ -42,10 +42,11 @@ func RowWash(selected bool) *properties.LinearGradient {
 	if !selected {
 		return nil
 	}
-	return giode.Linear(90, "#3B3279", "#2A2652", "#1F1C3A")
+	c := Current()
+	return giode.Linear(90, c.WashFrom, c.WashMid, c.WashTo)
 }
 
 // ScrollBar is the thin, auto-hiding scrollbar of every list.
 func ScrollBar() giode.ScrollBar {
-	return giode.ScrollBar{Width: 6, Radius: 3, TrackColor: "transparent", ThumbColor: "#3A3C48", AutoHide: true, Inset: 2}
+	return giode.ScrollBar{Width: 6, Radius: 3, TrackColor: "transparent", ThumbColor: Current().ScrollThumb, AutoHide: true, Inset: 2}
 }
