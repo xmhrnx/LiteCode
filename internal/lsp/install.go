@@ -24,8 +24,8 @@ func (in Installer) Command() string {
 
 // installers are the ways to install each language's server, best first.
 var installers = map[string][]Installer{
-	"go":         {{"gopls", "go", []string{"install", "golang.org/x/tools/gopls@latest"}}},
-	"gomod":      {{"gopls", "go", []string{"install", "golang.org/x/tools/gopls@latest"}}},
+	"go":    {{"gopls", "go", []string{"install", "golang.org/x/tools/gopls@latest"}}},
+	"gomod": {{"gopls", "go", []string{"install", "golang.org/x/tools/gopls@latest"}}},
 	// TypeScript 7 serves the language itself (tsc --lsp).
 	"typescript": {{"TypeScript", "npm", []string{"install", "-g", "typescript@latest"}}},
 	"javascript": {{"TypeScript", "npm", []string{"install", "-g", "typescript@latest"}}},
