@@ -62,6 +62,14 @@ type IDE struct {
 	CloseProject func()
 	// CurrentFile returns the selected editor file's path and text ("" when none).
 	CurrentFile func() (path, text string)
+	// ServerOffers are the languages whose missing language server the
+	// user was told about this session.
+	ServerOffers map[string]bool
+	// Installing are the language servers being installed, by name.
+	Installing map[string]bool
+	// ServersInstalled runs after a language server was installed, so
+	// open files of the language start using it.
+	ServersInstalled func(languageID string)
 	// OpenSettings opens the Settings dialog on a page ("AI Assistant").
 	OpenSettings func(page string)
 
@@ -72,7 +80,7 @@ type IDE struct {
 // loading them are returned together; the defaults stand in.
 func New(app *giode.App, pluginDir string) (*IDE, []error) {
 	var errs []error
-	ide := &IDE{App: app, Windows: map[layout.WindowID]ToolWindow{}, actions: map[keymap.Action]func(){}}
+	ide := &IDE{App: app, Windows: map[layout.WindowID]ToolWindow{}, actions: map[keymap.Action]func(){}, ServerOffers: map[string]bool{}, Installing: map[string]bool{}}
 	var err error
 	if ide.Settings, err = config.LoadSettings(); err != nil {
 		errs = append(errs, err)

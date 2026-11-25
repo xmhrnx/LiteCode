@@ -2,7 +2,6 @@ package lsp
 
 import (
 	"context"
-	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -32,26 +31,14 @@ func NewManager(root string) *Manager {
 	return &Manager{root: root, servers: map[string]*entry{}}
 }
 
-// Find returns the first command whose program is installed, or nil.
-func Find(commands ...[]string) []string {
-	for _, c := range commands {
-		if len(c) > 0 {
-			if _, err := exec.LookPath(c[0]); err == nil {
-				return c
-			}
-		}
-	}
-	return nil
-}
-
-// Server returns the server args runs, starting it the first time; it
-// waits while one is starting. It returns nil when there's no server
-// (args is nil) or it failed to start.
-func (m *Manager) Server(ctx context.Context, args []string) (*Server, error) {
-	if args == nil {
+// Server returns the first of the candidate commands that starts,
+// starting it the first time; it waits while one is starting. It returns
+// nil when there are no candidates or none started.
+func (m *Manager) Server(ctx context.Context, candidates [][]string) (*Server, error) {
+	if len(candidates) == 0 {
 		return nil, nil
 	}
-	key := strings.Join(args, " ")
+	key := keyOf(candidates)
 	m.mu.Lock()
 	e := m.servers[key]
 	if e == nil {
@@ -60,7 +47,11 @@ func (m *Manager) Server(ctx context.Context, args []string) (*Server, error) {
 		go func() {
 			sctx, cancel := context.WithTimeout(context.Background(), startTimeout)
 			defer cancel()
-			e.srv, e.err = Start(sctx, args, m.root)
+			for _, args := range candidates {
+				if e.srv, e.err = Start(sctx, args, m.root); e.err == nil {
+					break
+				}
+			}
 			close(e.ready)
 		}()
 	}
@@ -73,11 +64,20 @@ func (m *Manager) Server(ctx context.Context, args []string) (*Server, error) {
 	}
 }
 
-// Running returns the server args runs if it has started, without
-// waiting.
-func (m *Manager) Running(args []string) *Server {
+// keyOf names a candidate list, so languages with the same servers share
+// one.
+func keyOf(candidates [][]string) string {
+	parts := make([]string, len(candidates))
+	for i, c := range candidates {
+		parts[i] = strings.Join(c, " ")
+	}
+	return strings.Join(parts, "|")
+}
+
+// Running returns the server the candidates started, without waiting.
+func (m *Manager) Running(candidates [][]string) *Server {
 	m.mu.Lock()
-	e := m.servers[strings.Join(args, " ")]
+	e := m.servers[keyOf(candidates)]
 	m.mu.Unlock()
 	if e == nil {
 		return nil

@@ -32,6 +32,12 @@ type EditorArea struct {
 // NewEditorArea creates an empty editor area.
 func NewEditorArea(ide *core.IDE) *EditorArea {
 	a := &EditorArea{ide: ide, views: map[string]*CodeView{}, extras: map[string]giode.Element{}, empty: NewEmptyEditor(ide)}
+	ide.ServersInstalled = func(string) {
+		// One install can serve several languages (CSS, HTML, JSON).
+		for _, v := range a.views {
+			v.RetryServer()
+		}
+	}
 	c := theme.Current()
 	a.tabs = giode.DocTabs(giode.Styles{Background: c.Panel, Color: c.Text, BorderColor: c.Separator, FontSize: theme.UISize, Height: theme.TabStripHeight}).
 		Indicator(giode.Color(c.TabActive)).

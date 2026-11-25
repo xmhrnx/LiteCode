@@ -10,8 +10,8 @@ import (
 var servers = map[string][][]string{
 	"go":         {{"gopls"}},
 	"gomod":      {{"gopls"}},
-	"typescript": {{"typescript-language-server", "--stdio"}, {"vtsls", "--stdio"}},
-	"javascript": {{"typescript-language-server", "--stdio"}, {"vtsls", "--stdio"}},
+	"typescript": tsServers,
+	"javascript": tsServers,
 	"python":     {{"pyright-langserver", "--stdio"}, {"basedpyright-langserver", "--stdio"}, {"pylsp"}, {"jedi-language-server"}},
 	"rust":       {{"rust-analyzer"}},
 	"c":          {{"clangd"}},
@@ -26,6 +26,13 @@ var servers = map[string][][]string{
 	"dockerfile": {{"docker-langserver", "--stdio"}},
 	"markdown":   {{"marksman", "server"}},
 	"sql":        {{"sqls"}},
+}
+
+// tsServers serve TypeScript and JavaScript: the classic server (which
+// needs TypeScript 5 or earlier), then TypeScript 7's own.
+var tsServers = [][]string{
+	{"typescript-language-server", "--stdio"}, {"vtsls", "--stdio"},
+	{"tsc", "--lsp", "--stdio"}, {"tsgo", "--lsp", "--stdio"},
 }
 
 // ServerCommands are the language servers to try for the language: the

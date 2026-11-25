@@ -14,13 +14,14 @@ import (
 // path as breadcrumbs, the caret position and file properties, and any git
 // operation in progress.
 type StatusBar struct {
-	ide    *core.IDE
-	editor *EditorArea
+	ide     *core.IDE
+	editor  *EditorArea
+	install *installButton
 }
 
 // NewStatusBar creates the status bar for an editor area.
 func NewStatusBar(ide *core.IDE, editor *EditorArea) *StatusBar {
-	return &StatusBar{ide: ide, editor: editor}
+	return &StatusBar{ide: ide, editor: editor, install: newInstallButton(editor)}
 }
 
 func (s *StatusBar) crumbs() []giode.Element {
@@ -74,12 +75,15 @@ func (s *StatusBar) properties() []giode.Element {
 		kids = append(kids, giode.Text(t, st))
 	}
 	lang := v.Language().Name
-	if name := v.ServerName(); name != "" {
-		// The language server giving completions.
-		lang += " · " + name
+	if st := v.ServerStatus(); st != "" {
+		// The language server giving completions, or why there's none.
+		lang += " · " + st
 	}
 	kids = append(kids, giode.Box(giode.Styles{Background: c.AccentSoft, BorderRadius: 10, Padding: giode.SymmetricInset(9, 2)},
 		giode.Text(lang, giode.Styles{Color: c.TextAccent, FontSize: 11, FontWeight: giode.FontWeightMedium})))
+	if _, ok := v.Installer(); ok {
+		kids = append(kids, s.install)
+	}
 	return kids
 }
 

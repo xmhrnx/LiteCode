@@ -61,7 +61,11 @@ func Start(ctx context.Context, args []string, root string) (*Server, error) {
 		cancel()
 		return nil, err
 	}
-	s := &Server{Name: filepath.Base(args[0]), cmd: cmd, conn: newConn(stdin), cancel: cancel, done: make(chan struct{})}
+	name := filepath.Base(args[0])
+	for _, ext := range []string{".exe", ".cmd", ".bat"} {
+		name = strings.TrimSuffix(name, ext)
+	}
+	s := &Server{Name: name, cmd: cmd, conn: newConn(stdin), cancel: cancel, done: make(chan struct{})}
 	go func() {
 		s.conn.read(stdout)
 		close(s.done)

@@ -23,6 +23,7 @@ type completionSource interface {
 	ServerComplete(line, char16 int, trigger string, done func(items []lsp.Completion, ok bool))
 	ServerResolve(c lsp.Completion, done func(lsp.Completion))
 	ServerTriggers() []string
+	HasServer() bool
 }
 
 // completion is an open completion list.
@@ -36,6 +37,7 @@ type completion struct {
 	req     int              // the request whose answer is wanted
 	waiting bool
 	trigger string
+	member  bool // after "." or the like: only the server knows what fits
 }
 
 // col16 is a rune column as UTF-16 units, the language servers' count.
@@ -117,16 +119,31 @@ func (e *TextEditor) afterTyping(s string) {
 	}
 }
 
-// openCompletion opens the list at the caret: the text's words and the
-// language's keywords at once, the server's completions when they come.
+// afterMember reports whether the word at start follows a member access
+// ("json.", "self.", "a->", "std::"), where the text's words would be
+// guesses.
+func (e *TextEditor) afterMember(start textbuf.Pos) bool {
+	before := strings.TrimRight(string(e.buf.Line(start.Line)[:start.Col]), " \t")
+	return strings.HasSuffix(before, ".") || strings.HasSuffix(before, "->") || strings.HasSuffix(before, "::")
+}
+
+// openCompletion opens the list at the caret. With a language server it
+// shows the server's completions, waiting for them; without one, the
+// text's words and the language's keywords, but nothing after a member
+// access, where those would be wrong.
 func (e *TextEditor) openCompletion(trigger string) {
 	start := e.wordStart(e.sel.Caret)
 	if trigger != "" {
 		start = e.sel.Caret
 	}
-	// Waiting for the server keeps an empty list open until it answers.
-	e.comp = &completion{start: start, trigger: trigger, waiting: e.source != nil && e.source.ServerTriggers() != nil}
-	if trigger == "" {
+	server := e.source != nil && e.source.HasServer()
+	member := trigger != "" || e.afterMember(start)
+	if member && !server {
+		e.closeCompletion()
+		return
+	}
+	e.comp = &completion{start: start, trigger: trigger, member: member, waiting: server}
+	if !server {
 		e.comp.items = e.wordItems(start)
 	}
 	e.refilter()
@@ -167,7 +184,7 @@ func (e *TextEditor) wordItems(start textbuf.Pos) []lsp.Completion {
 // requestCompletions asks the server for the list at the caret; its
 // answer replaces the words when it has any.
 func (e *TextEditor) requestCompletions() {
-	if e.source == nil || e.comp == nil {
+	if e.source == nil || e.comp == nil || !e.source.HasServer() {
 		return
 	}
 	e.reqSeq++
@@ -178,8 +195,12 @@ func (e *TextEditor) requestCompletions() {
 			return
 		}
 		e.comp.waiting = false
-		if ok && len(items) > 0 {
+		switch {
+		case ok && len(items) > 0:
 			e.comp.items, e.comp.served = items, true
+		case !e.comp.member && !e.comp.served:
+			// The server had nothing: the text's words, as without one.
+			e.comp.items = e.wordItems(e.comp.start)
 		}
 		e.refilter()
 		e.ide.App.Invalidate()

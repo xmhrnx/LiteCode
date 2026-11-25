@@ -11,6 +11,11 @@ func TestRank(t *testing.T) {
 	if got := Rank(items, "pl"); len(got) == 0 || got[0].Label != "Println" {
 		t.Fatalf("pl: %+v", got)
 	}
+	// The source's order decides between equal matches.
+	srv := []Item{{Label: "MarshalIndent", Sort: "0001"}, {Label: "Marshal", Sort: "0000"}, {Label: "Valid", Sort: "0002"}}
+	if got := Rank(srv, "M"); len(got) != 2 || got[0].Label != "Marshal" {
+		t.Fatalf("server order: %+v", got)
+	}
 	if got := Rank(items, "Errorf"); len(got) != 0 {
 		t.Fatalf("typed in full: %+v", got)
 	}

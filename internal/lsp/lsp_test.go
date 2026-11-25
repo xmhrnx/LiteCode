@@ -10,7 +10,7 @@ import (
 )
 
 func TestGopls(t *testing.T) {
-	args := Find([]string{"gopls"})
+	args := Find("", []string{"gopls"})
 	if args == nil {
 		t.Skip("gopls not installed")
 	}
@@ -30,7 +30,7 @@ func TestGopls(t *testing.T) {
 	defer cancel()
 	m := NewManager(dir)
 	defer m.Stop()
-	s, err := m.Server(ctx, args)
+	s, err := m.Server(ctx, [][]string{args})
 	if err != nil || s == nil {
 		t.Fatal(err)
 	}

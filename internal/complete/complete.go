@@ -22,8 +22,10 @@ type Item struct {
 	score  int
 }
 
-// match scores how well typed matches s: a prefix beats a word start
-// ("gS" in "getString") beats letters in order; -1 is no match.
+// match scores how well typed matches s: a prefix in the same case beats
+// one in another case beats letters in order (word starts counting
+// more); -1 is no match. Matches of one kind tie, so the source's own
+// order (a language server's relevance) decides between them.
 func match(s, typed string) int {
 	if typed == "" {
 		return 0
@@ -31,9 +33,9 @@ func match(s, typed string) int {
 	ls, lt := strings.ToLower(s), strings.ToLower(typed)
 	switch {
 	case strings.HasPrefix(s, typed):
-		return 1000 - len(s)
+		return 3000
 	case strings.HasPrefix(ls, lt):
-		return 900 - len(s)
+		return 2000
 	}
 	// Letters in order, rewarding ones at word starts.
 	rs := []rune(s)
@@ -54,7 +56,7 @@ func match(s, typed string) int {
 	if j < len(tr) {
 		return -1
 	}
-	return 100 + score - len(s)/4
+	return 100 + score
 }
 
 // Rank keeps the items that match typed, best first.
@@ -80,6 +82,9 @@ func Rank(items []Item, typed string) []Item {
 		}
 		if out[i].Sort != out[j].Sort {
 			return out[i].Sort < out[j].Sort
+		}
+		if len(out[i].Label) != len(out[j].Label) {
+			return len(out[i].Label) < len(out[j].Label)
 		}
 		return out[i].Label < out[j].Label
 	})
